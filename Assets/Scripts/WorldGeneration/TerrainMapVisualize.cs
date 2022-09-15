@@ -27,4 +27,5 @@ public enum RenderMode
     RenderNoiseMap,
     RenderColorMap,
     RenderMesh,
+    RenderFalloff
 }

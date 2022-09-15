@@ -36,8 +36,8 @@ public class MeshHolder
         mesh.triangles = Triangles;
 
         mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
-        mesh.RecalculateTangents();
+        //mesh.RecalculateBounds();
+        //mesh.RecalculateTangents();
 
         return mesh;
     }
