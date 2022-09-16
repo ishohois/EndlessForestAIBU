@@ -5,7 +5,7 @@ using System;
 
 public class RepeatingTerrain : MonoBehaviour
 {
-    private const float Scale = 5f;
+    private const float Scale = 2f;
     private const float ViewerMovementChunkUpdateLimit = 25f;
     private const float sqrViewerMovementChunkUpdateLimit = ViewerMovementChunkUpdateLimit * ViewerMovementChunkUpdateLimit;
 
@@ -20,6 +20,9 @@ public class RepeatingTerrain : MonoBehaviour
 
     [SerializeField] private Material mapMaterial;
     [SerializeField] private LODInfo[] detailLevels;
+    [SerializeField] private LayerMask groundLayer;
+
+    private static LayerMask groundLayerMask;
 
     public static Vector2 viewerPosition;
 
@@ -28,9 +31,9 @@ public class RepeatingTerrain : MonoBehaviour
     private void Start()
     {
         terrainMapGenerator = FindObjectOfType<TerrainMapGenerator>();
-
+        groundLayerMask = groundLayer;
         maxViewDistance = detailLevels[detailLevels.Length - 1].VisibleDistanceLimit;
-        chunkSize = TerrainMapGenerator.MaxMapChunkSize - 1;
+        chunkSize = TerrainMapGenerator.MapChunkSize - 1;
         chunkVisibleInViewDistance = Mathf.RoundToInt(maxViewDistance / chunkSize);
 
         UpdateVisibleChunks();
@@ -87,9 +90,11 @@ public class RepeatingTerrain : MonoBehaviour
 
         MeshRenderer meshRenderer;
         MeshFilter meshFilter;
+        MeshCollider meshCollider;
 
         LODInfo[] detailLevels;
         LODMesh[] lodMeshes;
+        LODMesh collisionLODMesh;
 
         TerrainMapHolder terrainMap;
         bool terrainMapReceived;
@@ -104,8 +109,10 @@ public class RepeatingTerrain : MonoBehaviour
             Vector3 vector3 = new Vector3(position.x, 0f, position.y);
 
             meshObject = new GameObject("Terrain chunk");
+            meshObject.layer = LayerMask.NameToLayer("Obstacle");
             meshRenderer = meshObject.AddComponent<MeshRenderer>();
             meshFilter = meshObject.AddComponent<MeshFilter>();
+            meshCollider = meshObject.AddComponent<MeshCollider>();
             meshRenderer.material = material;
 
             meshObject.transform.position = vector3 * Scale;
@@ -117,6 +124,10 @@ public class RepeatingTerrain : MonoBehaviour
             for (int i = 0; i < detailLevels.Length; i++)
             {
                 lodMeshes[i] = new LODMesh(detailLevels[i].Lod, UpdateChunk);
+                if (detailLevels[i].UseForCollider == true)
+                {
+                    collisionLODMesh = lodMeshes[i];
+                }
             }
 
             terrainMapGenerator.RequestTerrainMapHolder(position, OnTerrainMapHolderReceived);
@@ -129,8 +140,8 @@ public class RepeatingTerrain : MonoBehaviour
 
             Texture2D texture = TextureGenerator.CreateColorMapTexture(
                 terrainMap.colorMap,
-                terrainMapGenerator.TerrainParameters.ChunkSize,
-                terrainMapGenerator.TerrainParameters.ChunkSize);
+                TerrainMapGenerator.MapChunkSize,
+                TerrainMapGenerator.MapChunkSize);
             meshRenderer.material.mainTexture = texture;
 
             UpdateChunk();
@@ -176,6 +187,19 @@ public class RepeatingTerrain : MonoBehaviour
                             lodMesh.RequestMesh(terrainMap);
                         }
                     }
+
+                    if (lodIndex == 0)
+                    {
+                        if (collisionLODMesh.hasMesh == true)
+                        {
+                            meshCollider.sharedMesh = collisionLODMesh.mesh;
+                        }
+                        else if (collisionLODMesh.hasRequestedMesh == false)
+                        {
+                            collisionLODMesh.RequestMesh(terrainMap);
+                        }
+                    }
+
                     lastActiveChunks.Add(this);
                 }
 
@@ -229,9 +253,12 @@ public class RepeatingTerrain : MonoBehaviour
     {
         [SerializeField] private int lod;
         [SerializeField] private float visibleDistanceLimit;
+        [SerializeField] private bool useForCollider;
 
         public int Lod { get { return lod; } set { lod = value; } }
         public float VisibleDistanceLimit { get { return visibleDistanceLimit; } set { visibleDistanceLimit = value; } }
+
+        public bool UseForCollider { get { return useForCollider; } }
 
     }
 }

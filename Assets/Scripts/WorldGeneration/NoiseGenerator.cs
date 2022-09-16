@@ -11,8 +11,10 @@ public static class NoiseGenerator
 
     public static float[,] GenerateNoise(TerrainParameters terrainParameters, Vector2 center)
     {
+        int chunkSize = TerrainMapGenerator.MapChunkSize + 2;
+
         Vector2 chunkCenterOffset = terrainParameters.Offset + center;
-        float[,] noise = new float[terrainParameters.ChunkSize, terrainParameters.ChunkSize];
+        float[,] noise = new float[chunkSize, chunkSize];
 
         System.Random pseudoRandom = new System.Random(terrainParameters.Seed);
         Vector2[] offsets = new Vector2[terrainParameters.Octaves];
@@ -39,11 +41,11 @@ public static class NoiseGenerator
         float maxLocalNoiseValue = float.MinValue;
         float minLocalNoiseValue = float.MaxValue;
 
-        float halfSize = terrainParameters.ChunkSize / 2;
+        float halfSize = chunkSize / 2;
 
-        for (int y = 0; y < terrainParameters.ChunkSize; y++)
+        for (int y = 0; y < chunkSize; y++)
         {
-            for (int x = 0; x < terrainParameters.ChunkSize; x++)
+            for (int x = 0; x < chunkSize; x++)
             {
 
                 amplitude = 1;
@@ -76,9 +78,9 @@ public static class NoiseGenerator
             }
         }
 
-        for (int y = 0; y < terrainParameters.ChunkSize; y++)
+        for (int y = 0; y < chunkSize; y++)
         {
-            for (int x = 0; x < terrainParameters.ChunkSize; x++)
+            for (int x = 0; x < chunkSize; x++)
             {
                 if (terrainParameters.NoiseNormalization == NoiseNormalizationMode.Local)
                 {

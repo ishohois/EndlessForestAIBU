@@ -34,6 +34,11 @@ namespace EventCallbacksSystem
 
         }
 
+        public bool HasRegisteredListener<T>(Action<T> listener) where T : Event
+        {
+            return eventListeners.ContainsKey(typeof(T));
+        }
+
         public void RegisterListener<T>(Action<T> listener) where T : Event
         {
             Type eventType = typeof(T);

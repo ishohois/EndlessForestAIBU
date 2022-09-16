@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
 using System;
+using EventCallbacksSystem;
 
 public class TerrainMapGenerator : MonoBehaviour
 {
-    public const int MaxMapChunkSize = 241;
 
     [SerializeField] private TerrainMapVisualize mapVisualizer;
     [SerializeField] private TerrainParameters terrainParameters;
@@ -15,17 +15,46 @@ public class TerrainMapGenerator : MonoBehaviour
     [SerializeField] private AnimationCurve heightCurve;
     [SerializeField] private int numberOfChunks;
     [SerializeField] private bool useFallOff;
+    [SerializeField] private bool useFlatShading;
+
+    [SerializeField] private TerrainInfoHolder terrainInfo;
 
     private Queue<MapTreadInfo<TerrainMapHolder>> terrainMapHolderThreadInfo = new Queue<MapTreadInfo<TerrainMapHolder>>();
     private Queue<MapTreadInfo<MeshHolder>> meshHolderThreadInfo = new Queue<MapTreadInfo<MeshHolder>>();
     private float[,] fallOffMap;
+    private static TerrainMapGenerator mapGeneratorInstance;
 
     public bool autoUpdate;
     public TerrainParameters TerrainParameters { get { return terrainParameters; } }
 
     private void Awake()
     {
-        fallOffMap = FalloffGenerator.GenerateFallOffMap(terrainParameters.ChunkSize);
+        fallOffMap = FalloffGenerator.GenerateFallOffMap(MapChunkSize);
+        EventSystem.Instance.RegisterListener<UpdatedTerrainInfoEvent>(HandleUpdatedTerrainInfoEvent);
+    }
+
+    private void HandleUpdatedTerrainInfoEvent(UpdatedTerrainInfoEvent ev)
+    {
+        Debug.Log("Received the terrain info and will do something with the info");
+    }
+
+    public static int MapChunkSize
+    {
+        get
+        {
+            if (mapGeneratorInstance == null)
+            {
+                mapGeneratorInstance = FindObjectOfType<TerrainMapGenerator>();
+            }
+            if (mapGeneratorInstance.useFlatShading == true)
+            {
+                return 95;
+            }
+            else
+            {
+                return 239;
+            }
+        }
     }
 
     public void RenderMapInEditor()
@@ -38,15 +67,15 @@ public class TerrainMapGenerator : MonoBehaviour
         }
         else if (renderMode == RenderMode.RenderColorMap)
         {
-            mapVisualizer.RenderTexture(TextureGenerator.CreateColorMapTexture(terrainMap.colorMap, terrainParameters.ChunkSize, terrainParameters.ChunkSize));
+            mapVisualizer.RenderTexture(TextureGenerator.CreateColorMapTexture(terrainMap.colorMap, MapChunkSize, MapChunkSize));
         }
         else if (renderMode == RenderMode.RenderMesh)
         {
-            mapVisualizer.RenderMesh(MeshCreator.GenerateTerrainMesh(terrainMap.heightMap, terrainParameters.HeightMultiplier, heightCurve, terrainParameters.LevelOfDetail),
+            mapVisualizer.RenderMesh(MeshCreator.GenerateTerrainMesh(terrainMap.heightMap, terrainParameters.HeightMultiplier, heightCurve, terrainParameters.LevelOfDetail, useFlatShading),
                 TextureGenerator.CreateColorMapTexture(
                     terrainMap.colorMap,
-                    terrainParameters.ChunkSize,
-                    terrainParameters.ChunkSize));
+                    MapChunkSize,
+                    MapChunkSize));
         }
         else if (renderMode == RenderMode.RenderFalloff)
         {
@@ -83,7 +112,7 @@ public class TerrainMapGenerator : MonoBehaviour
 
     private void MeshHolderThread(TerrainMapHolder terrainMapHolder, int lod, Action<MeshHolder> callback)
     {
-        MeshHolder meshHolder = MeshCreator.GenerateTerrainMesh(terrainMapHolder.heightMap, terrainParameters.HeightMultiplier, heightCurve, lod);
+        MeshHolder meshHolder = MeshCreator.GenerateTerrainMesh(terrainMapHolder.heightMap, terrainParameters.HeightMultiplier, heightCurve, lod, useFlatShading);
         lock (meshHolderThreadInfo)
         {
             meshHolderThreadInfo.Enqueue(new MapTreadInfo<MeshHolder>(callback, meshHolder));
@@ -116,10 +145,10 @@ public class TerrainMapGenerator : MonoBehaviour
         float[,] terrainNoiseMap = NoiseGenerator.GenerateNoise(terrainParameters, chunkCentre);
 
 
-        Color[] colorMap = new Color[terrainParameters.ChunkSize * terrainParameters.ChunkSize];
-        for (int y = 0; y < terrainParameters.ChunkSize; y++)
+        Color[] colorMap = new Color[MapChunkSize * MapChunkSize];
+        for (int y = 0; y < MapChunkSize; y++)
         {
-            for (int x = 0; x < terrainParameters.ChunkSize; x++)
+            for (int x = 0; x < MapChunkSize; x++)
             {
                 if (useFallOff)
                 {
@@ -131,7 +160,7 @@ public class TerrainMapGenerator : MonoBehaviour
                 {
                     if (currentHeight >= biomes[i].BiomeHeight)
                     {
-                        colorMap[y * terrainParameters.ChunkSize + x] = biomes[i].BiomeColor;
+                        colorMap[y * MapChunkSize + x] = biomes[i].BiomeColor;
                     }
                     else
                     {
@@ -147,6 +176,11 @@ public class TerrainMapGenerator : MonoBehaviour
     private void OnValidate()
     {
 
+        if (EventSystem.Instance.HasRegisteredListener<UpdatedTerrainInfoEvent>(HandleUpdatedTerrainInfoEvent) == false)
+        {
+            EventSystem.Instance.RegisterListener<UpdatedTerrainInfoEvent>(HandleUpdatedTerrainInfoEvent);
+        }
+
         if (terrainParameters.Lacunarity < 1)
         {
             terrainParameters.Lacunarity = 1f;
@@ -157,7 +191,7 @@ public class TerrainMapGenerator : MonoBehaviour
             terrainParameters.Octaves = 1;
         }
 
-        fallOffMap = FalloffGenerator.GenerateFallOffMap(terrainParameters.ChunkSize);
+        fallOffMap = FalloffGenerator.GenerateFallOffMap(MapChunkSize);
     }
 
     private struct MapTreadInfo<T>

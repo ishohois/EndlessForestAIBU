@@ -10,20 +10,18 @@ namespace EventCallbacksSystem
         public string Description { get; set; }
     }
 
-    public class DebugEvent : Event
+    public class UpdatedTerrainInfoEvent : Event
     {
-        public int VerbosityLevel { get; set; }
-        public string DebugInfo { get; set; }
+
     }
 
-    public class DeathEvent : Event
+    public class UpdatedNoiseInfoEvent : Event
     {
-        public GameObject GameObjectUnit { get; set; }
+
     }
 
-    public class TriggerEvent : Event
+    public class UpdatedTextureInfoEvent : Event
     {
-        private bool isTriggered = true;
-        public bool IsTriggered { get { return isTriggered; } }
+
     }
 }
