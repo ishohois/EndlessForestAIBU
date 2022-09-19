@@ -5,44 +5,44 @@ using System;
 
 public class RepeatingTerrain : MonoBehaviour
 {
-    private const float Scale = 2f;
+
     private const float ViewerMovementChunkUpdateLimit = 25f;
     private const float sqrViewerMovementChunkUpdateLimit = ViewerMovementChunkUpdateLimit * ViewerMovementChunkUpdateLimit;
+    private const int MaxNumberOfChunks = 30;
 
     private static float maxViewDistance;
     private static TerrainMapGenerator terrainMapGenerator;
     private static List<TerrainChunk> lastActiveChunks = new List<TerrainChunk>();
+    private static int generatedChunks = 1;
 
     private int chunkSize;
     private int chunkVisibleInViewDistance;
     private Dictionary<Vector2, TerrainChunk> terrainChunks = new Dictionary<Vector2, TerrainChunk>();
     private Vector2 viewerPositionOld;
 
-    [SerializeField] private Material mapMaterial;
     [SerializeField] private LODInfo[] detailLevels;
-    [SerializeField] private LayerMask groundLayer;
-
-    private static LayerMask groundLayerMask;
+    [SerializeField] private Material mapMaterial;
+    [SerializeField] private List<GameObject> vegetationPrefabs;
 
     public static Vector2 viewerPosition;
+
 
     public Transform viewer;
 
     private void Start()
     {
         terrainMapGenerator = FindObjectOfType<TerrainMapGenerator>();
-        groundLayerMask = groundLayer;
         maxViewDistance = detailLevels[detailLevels.Length - 1].VisibleDistanceLimit;
-        chunkSize = TerrainMapGenerator.MapChunkSize - 1;
+        chunkSize = terrainMapGenerator.MapChunkSize - 1;
         chunkVisibleInViewDistance = Mathf.RoundToInt(maxViewDistance / chunkSize);
 
-        UpdateVisibleChunks();
+        GenerateChunks();
     }
 
     private void Update()
     {
-        viewerPosition.x = viewer.position.x / Scale;
-        viewerPosition.y = viewer.position.z / Scale;
+        viewerPosition.x = viewer.position.x / terrainMapGenerator.TerrainInfo.UniformScale;
+        viewerPosition.y = viewer.position.z / terrainMapGenerator.TerrainInfo.UniformScale;
 
         if ((viewerPositionOld - viewerPosition).sqrMagnitude > sqrViewerMovementChunkUpdateLimit)
         {
@@ -52,6 +52,24 @@ public class RepeatingTerrain : MonoBehaviour
 
     }
 
+    private void GenerateChunks()
+    {
+        int currentChunkCoordX = Mathf.RoundToInt(viewerPosition.x / chunkSize);
+        int currentChunkCoordY = Mathf.RoundToInt(viewerPosition.y / chunkSize);
+        Vector2 chunkInViewPositiom = Vector2.zero;
+        for (int yOffset = -chunkVisibleInViewDistance; yOffset <= chunkVisibleInViewDistance; yOffset++)
+        {
+            for (int xOffset = -chunkVisibleInViewDistance; xOffset <= chunkVisibleInViewDistance; xOffset++)
+            {
+                chunkInViewPositiom.x = currentChunkCoordX + xOffset;
+                chunkInViewPositiom.y = currentChunkCoordY + yOffset;
+                terrainChunks.Add(chunkInViewPositiom, new TerrainChunk(chunkInViewPositiom, chunkSize, detailLevels, transform, mapMaterial, vegetationPrefabs));
+                terrainChunks[chunkInViewPositiom].PlaceObjects(chunkSize, terrainChunks[chunkInViewPositiom].meshObject.transform, vegetationPrefabs);
+            }
+        }
+    }
+
+
     private void UpdateVisibleChunks()
     {
         for (int i = 0; i < lastActiveChunks.Count; i++)
@@ -59,7 +77,7 @@ public class RepeatingTerrain : MonoBehaviour
             lastActiveChunks[i].SetChunkVisibility(false);
         }
 
-        lastActiveChunks.Clear();
+        //lastActiveChunks.Clear();
 
         int currentChunkCoordX = Mathf.RoundToInt(viewerPosition.x / chunkSize);
         int currentChunkCoordY = Mathf.RoundToInt(viewerPosition.y / chunkSize);
@@ -76,15 +94,28 @@ public class RepeatingTerrain : MonoBehaviour
                 }
                 else
                 {
-                    terrainChunks.Add(chunkInViewPositiom, new TerrainChunk(chunkInViewPositiom, chunkSize, detailLevels, transform, mapMaterial));
+                    terrainChunks.Add(chunkInViewPositiom, new TerrainChunk(chunkInViewPositiom, chunkSize, detailLevels, transform, mapMaterial, vegetationPrefabs));
                 }
             }
         }
+
+        if (generatedChunks >= MaxNumberOfChunks)
+        {
+            foreach (var chunk in lastActiveChunks)
+            {
+                if (chunk.IsVisible() == false)
+                {
+                    generatedChunks -= (generatedChunks % MaxNumberOfChunks);
+                    chunk.DestroyChunk();
+                }
+            }
+        }
+
     }
 
     private class TerrainChunk
     {
-        GameObject meshObject;
+        public GameObject meshObject;
         Vector2 position;
         Bounds bounds;
 
@@ -99,38 +130,34 @@ public class RepeatingTerrain : MonoBehaviour
         TerrainMapHolder terrainMap;
         bool terrainMapReceived;
         int previousLODIndex = -1;
-
-        public TerrainChunk(Vector2 viewerPostion, int size, LODInfo[] detailLevels, Transform parent, Material material)
+        int size;
+        bool isChunkVisible;
+        List<GameObject> prefabs;
+        bool hasPlacedObjects;
+        public TerrainChunk(Vector2 viewerPostion, int size, LODInfo[] detailLevels, Transform parent, Material material, List<GameObject> vegetationPrefabs)
         {
+            //Debug.Log("Generated chunks" + generatedChunks);
             this.detailLevels = detailLevels;
+            this.size = size;
+            this.prefabs = vegetationPrefabs;
 
             position = viewerPostion * size;
             bounds = new Bounds(position, Vector2.one * size);
             Vector3 vector3 = new Vector3(position.x, 0f, position.y);
 
-            meshObject = new GameObject("Terrain chunk");
-            meshObject.layer = LayerMask.NameToLayer("Obstacle");
+            meshObject = new GameObject("Terrain chunk" + generatedChunks);
             meshRenderer = meshObject.AddComponent<MeshRenderer>();
             meshFilter = meshObject.AddComponent<MeshFilter>();
-            meshCollider = meshObject.AddComponent<MeshCollider>();
             meshRenderer.material = material;
 
-            meshObject.transform.position = vector3 * Scale;
+            meshObject.transform.position = vector3 * terrainMapGenerator.TerrainInfo.UniformScale;
             meshObject.transform.parent = parent;
-            meshObject.transform.localScale = Vector3.one * Scale;
-            SetObjectVisibility(false);
-
-            lodMeshes = new LODMesh[detailLevels.Length];
-            for (int i = 0; i < detailLevels.Length; i++)
-            {
-                lodMeshes[i] = new LODMesh(detailLevels[i].Lod, UpdateChunk);
-                if (detailLevels[i].UseForCollider == true)
-                {
-                    collisionLODMesh = lodMeshes[i];
-                }
-            }
+            meshObject.transform.localScale = Vector3.one * terrainMapGenerator.TerrainInfo.UniformScale;
+            //SetObjectVisibility(false);
 
             terrainMapGenerator.RequestTerrainMapHolder(position, OnTerrainMapHolderReceived);
+
+            generatedChunks++;
         }
 
         private void OnTerrainMapHolderReceived(TerrainMapHolder terrainMapHolder)
@@ -138,19 +165,62 @@ public class RepeatingTerrain : MonoBehaviour
             this.terrainMap = terrainMapHolder;
             terrainMapReceived = true;
 
-            Texture2D texture = TextureGenerator.CreateColorMapTexture(
-                terrainMap.colorMap,
-                TerrainMapGenerator.MapChunkSize,
-                TerrainMapGenerator.MapChunkSize);
-            meshRenderer.material.mainTexture = texture;
+            terrainMapGenerator.RequestMeshHolder(terrainMap, 0, OnMeshHolderReceived);
 
             UpdateChunk();
+
+            Debug.Log("OnTerrainMapHolderReceived");
+            Debug.Break();
+        }
+
+        private void OnMeshHolderReceived(MeshHolder meshHolder)
+        {
+            meshFilter.mesh = meshHolder.GenerateMesh();
+            meshCollider = meshObject.AddComponent<MeshCollider>();
         }
 
         private void SetObjectVisibility(bool isVisible)
         {
-            meshObject.SetActive(isVisible);
+            isChunkVisible = isVisible;
+            if (meshObject != null)
+                meshObject.SetActive(isVisible);
         }
+
+        public void PlaceObjects(int chunkSize, Transform chunkTransform, List<GameObject> objectsToPlace)
+        {
+            List<Vector2> placementPoints = ObjectPlacement.GeneratePoints(new Vector2(chunkSize, chunkSize), 10f, 30);
+            Vector3 startPosSpawn = new Vector3(chunkTransform.position.x - (float)(chunkSize / 2), 60f, chunkTransform.position.z + (float)(chunkSize / 2));
+            Vector3 posToSpawn = startPosSpawn;
+
+            for (int i = 0; i < placementPoints.Count; i++)
+            {
+                posToSpawn.x += placementPoints[i].x;
+                posToSpawn.z += placementPoints[i].y - chunkSize;
+
+                Ray ray = new Ray(posToSpawn, Vector3.down);
+
+                if (Physics.Raycast(ray, out RaycastHit hit))
+                {
+                    GameObject objectToPlace = Instantiate(objectsToPlace[0], chunkTransform.transform);
+                    objectToPlace.transform.position = hit.point - Vector3.up;
+                    objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
+                    objectToPlace.transform.Rotate(Vector3.up, UnityEngine.Random.Range(0, 360));
+                    objectToPlace.transform.localScale *= UnityEngine.Random.Range(1f, 3f);
+                    //objectToPlace.SetActive(false);
+                }
+
+                posToSpawn = startPosSpawn;
+            }
+        }
+
+        private void ActivateVegetation(bool isVisible)
+        {
+            foreach (Transform child in meshObject.transform)
+            {
+                child.gameObject.SetActive(isVisible);
+            }
+        }
+
 
         public void UpdateChunk()
         {
@@ -161,49 +231,12 @@ public class RepeatingTerrain : MonoBehaviour
 
                 if (visible == true)
                 {
-                    int lodIndex = 0;
-                    for (int i = 0; i < detailLevels.Length - 1; i++)
-                    {
-                        if (viewerDistanceFromNearestEdge > detailLevels[i].VisibleDistanceLimit)
-                        {
-                            lodIndex = i + 1;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
+                    
 
-                    if (lodIndex != previousLODIndex)
-                    {
-                        LODMesh lodMesh = lodMeshes[lodIndex];
-                        if (lodMesh.hasMesh == true)
-                        {
-                            previousLODIndex = lodIndex;
-                            meshFilter.mesh = lodMesh.mesh;
-                        }
-                        else if (lodMesh.hasRequestedMesh == false)
-                        {
-                            lodMesh.RequestMesh(terrainMap);
-                        }
-                    }
-
-                    if (lodIndex == 0)
-                    {
-                        if (collisionLODMesh.hasMesh == true)
-                        {
-                            meshCollider.sharedMesh = collisionLODMesh.mesh;
-                        }
-                        else if (collisionLODMesh.hasRequestedMesh == false)
-                        {
-                            collisionLODMesh.RequestMesh(terrainMap);
-                        }
-                    }
-
-                    lastActiveChunks.Add(this);
+                    //lastActiveChunks.Add(this);
                 }
 
-                SetObjectVisibility(visible);
+                //SetObjectVisibility(visible);
             }
         }
 
@@ -214,9 +247,18 @@ public class RepeatingTerrain : MonoBehaviour
 
         public bool IsVisible()
         {
-            return meshObject.activeSelf;
+            return isChunkVisible;
         }
 
+
+        public void DestroyChunk()
+        {
+            detailLevels = null;
+            lodMeshes = null;
+            collisionLODMesh = null;
+
+            Destroy(meshObject);
+        }
     }
 
     private class LODMesh

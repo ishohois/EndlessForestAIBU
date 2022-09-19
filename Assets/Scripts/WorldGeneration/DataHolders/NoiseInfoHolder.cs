@@ -7,7 +7,7 @@ using EventCallbacksSystem;
 public class NoiseInfoHolder : UpdatableInfo
 {
     private UpdatedNoiseInfoEvent updatedNoiseInfoEvent;
-    
+
     [SerializeField] private NoiseNormalizationMode noiseNormalization;
     [SerializeField] private float noiseNormaliseFactor;
     [SerializeField] private float noiseScale;
@@ -23,7 +23,7 @@ public class NoiseInfoHolder : UpdatableInfo
 
     public NoiseNormalizationMode NoiseNormalization { get { return noiseNormalization; } }
     public float NoiseNormaliseFactor { get { return noiseNormaliseFactor; } }
-    public float NoisseScale { get { return noiseScale; } }
+    public float NoiseScale { get { return noiseScale; } set { noiseScale = value; } }
     public int Octaves { get { return octaves; } }
     public float Persistence { get { return persistence; } }
     public float Lacunarity { get { return lacunarity; } }
@@ -46,20 +46,15 @@ public class NoiseInfoHolder : UpdatableInfo
     protected override void OnValidate()
     {
 
-        if(updatedNoiseInfoEvent == null)
+        if (updatedNoiseInfoEvent == null)
         {
             updatedNoiseInfoEvent = new UpdatedNoiseInfoEvent();
             infoEvent = updatedNoiseInfoEvent;
         }
 
-        if (lacunarity < 1)
-        {
-            lacunarity = 1;
-        }
-        if (octaves < 0)
-        {
-            octaves = 0;
-        }
+        noiseScale = Mathf.Max(noiseScale, 0.0001f);
+        lacunarity = Mathf.Max(lacunarity, 1);
+        octaves = Mathf.Max(octaves, 1);
 
         base.OnValidate();
     }

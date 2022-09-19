@@ -7,46 +7,64 @@ using EventCallbacksSystem;
 
 public class TerrainMapGenerator : MonoBehaviour
 {
-
-    [SerializeField] private TerrainMapVisualize mapVisualizer;
-    [SerializeField] private TerrainParameters terrainParameters;
-    [SerializeField] private Biome[] biomes;
-    [SerializeField] private RenderMode renderMode;
-    [SerializeField] private AnimationCurve heightCurve;
-    [SerializeField] private int numberOfChunks;
-    [SerializeField] private bool useFallOff;
-    [SerializeField] private bool useFlatShading;
-
-    [SerializeField] private TerrainInfoHolder terrainInfo;
-
     private Queue<MapTreadInfo<TerrainMapHolder>> terrainMapHolderThreadInfo = new Queue<MapTreadInfo<TerrainMapHolder>>();
     private Queue<MapTreadInfo<MeshHolder>> meshHolderThreadInfo = new Queue<MapTreadInfo<MeshHolder>>();
     private float[,] fallOffMap;
-    private static TerrainMapGenerator mapGeneratorInstance;
+    private float[,] heightMap;
+    private ObjectPlacement objectPlacement;
+
+    [SerializeField] private NoiseInfoHolder noiseInfo;
+    [SerializeField] private TerrainInfoHolder terrainInfo;
+    [SerializeField] private TextureInfoHolder textureInfo;
+    [SerializeField] private RenderMode renderMode;
+    [Range(0, 6)]
+    [SerializeField] private int levelOfDetalInEditor;
+    [SerializeField] private Material terrainMaterial;
+
+    [SerializeField] private TerrainMapVisualize mapVisualizer;
+    [SerializeField] private Biome[] biomes;
+    [SerializeField] private List<GameObject> prefabs;
 
     public bool autoUpdate;
-    public TerrainParameters TerrainParameters { get { return terrainParameters; } }
+    public NoiseInfoHolder NoiseInfo { get { return noiseInfo; } }
+    public TerrainInfoHolder TerrainInfo { get { return terrainInfo; } }
+    public TextureInfoHolder TextureInfo { get { return textureInfo; } }
+    public ObjectPlacement ObjectPlacement { get { return objectPlacement; } }
 
     private void Awake()
     {
-        fallOffMap = FalloffGenerator.GenerateFallOffMap(MapChunkSize);
         EventSystem.Instance.RegisterListener<UpdatedTerrainInfoEvent>(HandleUpdatedTerrainInfoEvent);
+        EventSystem.Instance.RegisterListener<UpdatedNoiseInfoEvent>(HandleUpdatedNoiseInfoEvent);
+        //EventSystem.Instance.RegisterListener<UpdatedTextureInfoEvent>(HandleUpdatedTextureInfoEvent);
+        objectPlacement = FindObjectOfType<ObjectPlacement>();
     }
 
     private void HandleUpdatedTerrainInfoEvent(UpdatedTerrainInfoEvent ev)
     {
-        Debug.Log("Received the terrain info and will do something with the info");
+        if (Application.isPlaying == false)
+        {
+            RenderMapInEditor();
+        }
     }
 
-    public static int MapChunkSize
+    private void HandleUpdatedNoiseInfoEvent(UpdatedNoiseInfoEvent ev)
+    {
+        if (Application.isPlaying == false)
+        {
+            RenderMapInEditor();
+        }
+    }
+
+    //private void HandleUpdatedTextureInfoEvent(UpdatedTextureInfoEvent ev)
+    //{
+    //    textureInfo.ApplyToMaterial(terrainMaterial);
+    //}
+
+    public int MapChunkSize
     {
         get
         {
-            if (mapGeneratorInstance == null)
-            {
-                mapGeneratorInstance = FindObjectOfType<TerrainMapGenerator>();
-            }
-            if (mapGeneratorInstance.useFlatShading == true)
+            if (terrainInfo.UseFlatShading == true)
             {
                 return 95;
             }
@@ -71,15 +89,21 @@ public class TerrainMapGenerator : MonoBehaviour
         }
         else if (renderMode == RenderMode.RenderMesh)
         {
-            mapVisualizer.RenderMesh(MeshCreator.GenerateTerrainMesh(terrainMap.heightMap, terrainParameters.HeightMultiplier, heightCurve, terrainParameters.LevelOfDetail, useFlatShading),
+            mapVisualizer.RenderMesh(MeshCreator.GenerateTerrainMesh(
+                terrainMap.heightMap,
+                terrainInfo.HeightMultiplier,
+                terrainInfo.HeightCurve,
+                levelOfDetalInEditor,
+                terrainInfo.UseFlatShading),
                 TextureGenerator.CreateColorMapTexture(
                     terrainMap.colorMap,
                     MapChunkSize,
                     MapChunkSize));
+            PlaceObjects();
         }
         else if (renderMode == RenderMode.RenderFalloff)
         {
-            mapVisualizer.RenderTexture(TextureGenerator.CreateHeightMapTexture(fallOffMap));
+            mapVisualizer.RenderTexture(TextureGenerator.CreateHeightMapTexture(FalloffGenerator.GenerateFallOffMap(MapChunkSize)));
         }
     }
 
@@ -112,7 +136,7 @@ public class TerrainMapGenerator : MonoBehaviour
 
     private void MeshHolderThread(TerrainMapHolder terrainMapHolder, int lod, Action<MeshHolder> callback)
     {
-        MeshHolder meshHolder = MeshCreator.GenerateTerrainMesh(terrainMapHolder.heightMap, terrainParameters.HeightMultiplier, heightCurve, lod, useFlatShading);
+        MeshHolder meshHolder = MeshCreator.GenerateTerrainMesh(terrainMapHolder.heightMap, terrainInfo.HeightMultiplier, terrainInfo.HeightCurve, lod, terrainInfo.UseFlatShading);
         lock (meshHolderThreadInfo)
         {
             meshHolderThreadInfo.Enqueue(new MapTreadInfo<MeshHolder>(callback, meshHolder));
@@ -140,17 +164,50 @@ public class TerrainMapGenerator : MonoBehaviour
         }
     }
 
+    private void PlaceObjects()
+    {
+        //int chunkSize = MapChunkSize - 1;
+        List<Vector2> points = ObjectPlacement.GeneratePoints(new Vector2(MapChunkSize, MapChunkSize), 10f, 30);
+        Vector3 startPosSpawn = new Vector3(objectPlacement.transform.position.x - (float)(MapChunkSize / 2), 60f, objectPlacement.transform.position.z + (float)(MapChunkSize / 2));
+        Vector3 posToSpawn = startPosSpawn;
+
+        for (int i = 0; i < points.Count; i++)
+        {
+            posToSpawn.x += points[i].x;
+            posToSpawn.z += points[i].y - MapChunkSize;
+
+            Ray ray = new Ray(posToSpawn, Vector3.down);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                //GameObject tree = Instantiate(objectPlacement.TreePrefab, objectPlacement.transform);
+                GameObject objectToPlace = Instantiate(prefabs[ObjectPlacement.RandomBetweenRangeInt(0, prefabs.Count)], objectPlacement.transform);
+                objectToPlace.transform.position = hit.point - Vector3.up;
+                objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
+                objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
+                objectToPlace.transform.localScale *= ObjectPlacement.RandomBetweenRange(1f, 3f);
+            }
+
+            posToSpawn = startPosSpawn;
+        }
+    }
+
+
     private TerrainMapHolder GenerateTerrainMap(Vector2 chunkCentre)
     {
-        float[,] terrainNoiseMap = NoiseGenerator.GenerateNoise(terrainParameters, chunkCentre);
-
-
-        Color[] colorMap = new Color[MapChunkSize * MapChunkSize];
-        for (int y = 0; y < MapChunkSize; y++)
+        float[,] terrainNoiseMap = NoiseGenerator.GenerateNoise(MapChunkSize + 2, chunkCentre, noiseInfo);
+        heightMap = terrainNoiseMap;
+        if (terrainInfo.UseFallOff)
         {
-            for (int x = 0; x < MapChunkSize; x++)
+            fallOffMap = FalloffGenerator.GenerateFallOffMap(MapChunkSize + 2);
+        }
+
+
+        Color[] colorMap = new Color[(MapChunkSize + 2) * (MapChunkSize + 2)];
+        for (int y = 0; y < MapChunkSize + 2; y++)
+        {
+            for (int x = 0; x < MapChunkSize + 2; x++)
             {
-                if (useFallOff)
+                if (terrainInfo.UseFallOff)
                 {
                     terrainNoiseMap[x, y] = Mathf.Clamp01(terrainNoiseMap[x, y] - fallOffMap[x, y]);
                 }
@@ -160,7 +217,7 @@ public class TerrainMapGenerator : MonoBehaviour
                 {
                     if (currentHeight >= biomes[i].BiomeHeight)
                     {
-                        colorMap[y * MapChunkSize + x] = biomes[i].BiomeColor;
+                        colorMap[y * MapChunkSize + 2 + x] = biomes[i].BiomeColor;
                     }
                     else
                     {
@@ -170,7 +227,9 @@ public class TerrainMapGenerator : MonoBehaviour
             }
         }
 
-        return new TerrainMapHolder(terrainNoiseMap, colorMap);
+        List<Vector2> points = ObjectPlacement.GeneratePoints(new Vector2(MapChunkSize, MapChunkSize), 10f, 30);
+
+        return new TerrainMapHolder(terrainNoiseMap, colorMap, points);
     }
 
     private void OnValidate()
@@ -181,17 +240,15 @@ public class TerrainMapGenerator : MonoBehaviour
             EventSystem.Instance.RegisterListener<UpdatedTerrainInfoEvent>(HandleUpdatedTerrainInfoEvent);
         }
 
-        if (terrainParameters.Lacunarity < 1)
+        if (EventSystem.Instance.HasRegisteredListener<UpdatedNoiseInfoEvent>(HandleUpdatedNoiseInfoEvent) == false)
         {
-            terrainParameters.Lacunarity = 1f;
+            EventSystem.Instance.RegisterListener<UpdatedNoiseInfoEvent>(HandleUpdatedNoiseInfoEvent);
         }
 
-        if (terrainParameters.Octaves < 0)
+        if (objectPlacement == null)
         {
-            terrainParameters.Octaves = 1;
+            objectPlacement = FindObjectOfType<ObjectPlacement>();
         }
-
-        fallOffMap = FalloffGenerator.GenerateFallOffMap(MapChunkSize);
     }
 
     private struct MapTreadInfo<T>
@@ -211,11 +268,13 @@ public struct TerrainMapHolder
 {
     public readonly float[,] heightMap;
     public readonly Color[] colorMap;
+    public readonly List<Vector2> placementPoints;
 
-    public TerrainMapHolder(float[,] heightMaps, Color[] colorMap)
+    public TerrainMapHolder(float[,] heightMaps, Color[] colorMap, List<Vector2> placementPoints)
     {
         this.heightMap = heightMaps;
         this.colorMap = colorMap;
+        this.placementPoints = placementPoints;
     }
 }
 

@@ -24,4 +24,24 @@ namespace EventCallbacksSystem
     {
 
     }
+
+    public class BaseAudioEvent : Event
+    {
+        public AudioClipType AudioClipType { get; set; }
+    }
+
+    public class NarrativeAudioEvent : BaseAudioEvent
+    {
+       
+    }
+
+    public class AmbientAudioEvent : BaseAudioEvent
+    {
+        
+    }
+
+    public class MemoryAudioEvent : BaseAudioEvent
+    {
+        
+    }
 }

@@ -18,6 +18,11 @@ public class TerrainMapVisualize : MonoBehaviour
     {
         meshFilter.sharedMesh = mesh.GenerateMesh();
         meshRenderer.sharedMaterial.mainTexture = texture;
+        if (meshFilter.gameObject.GetComponent<MeshCollider>())
+        {
+            DestroyImmediate(meshFilter.gameObject.GetComponent<MeshCollider>());
+        }
+        meshFilter.gameObject.AddComponent<MeshCollider>();
     }
 
 }
