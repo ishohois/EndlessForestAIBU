@@ -105,10 +105,10 @@ Material:
     - _GrassHeightBlendScale: 0.77
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _RockHeight: 0.63
-    - _RockThresholdh: 8.73
-    - _SandHeight: 0.55
-    - _SandThreshold: -0.64
+    - _RockHeight: 0.51
+    - _RockThresholdh: 26.28
+    - _SandHeight: -0.18
+    - _SandThreshold: -0.3
     - _SnowHeight: 27
     - _TileValue: 0.2
     - _WaterHeight: -2.8

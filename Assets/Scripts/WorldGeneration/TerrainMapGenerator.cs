@@ -22,8 +22,8 @@ public class TerrainMapGenerator : MonoBehaviour
     [SerializeField] private Material terrainMaterial;
 
     [SerializeField] private TerrainMapVisualize mapVisualizer;
-    [SerializeField] private Biome[] biomes;
-    [SerializeField] private List<GameObject> prefabs;
+    //[SerializeField] private List<GameObject> prefabs;
+    [SerializeField] private List<SpawnObject> prefabs;
 
     public bool autoUpdate;
     public NoiseInfoHolder NoiseInfo { get { return noiseInfo; } }
@@ -81,10 +81,6 @@ public class TerrainMapGenerator : MonoBehaviour
         {
             mapVisualizer.RenderTexture(TextureGenerator.CreateHeightMapTexture(terrainMap.heightMap));
         }
-        else if (renderMode == RenderMode.RenderColorMap)
-        {
-            mapVisualizer.RenderTexture(TextureGenerator.CreateColorMapTexture(terrainMap.colorMap, MapChunkSize, MapChunkSize));
-        }
         else if (renderMode == RenderMode.RenderMesh)
         {
             mapVisualizer.RenderMesh(MeshCreator.GenerateTerrainMesh(
@@ -92,11 +88,7 @@ public class TerrainMapGenerator : MonoBehaviour
                 terrainInfo.HeightMultiplier,
                 terrainInfo.HeightCurve,
                 levelOfDetalInEditor,
-                terrainInfo.UseFlatShading),
-                TextureGenerator.CreateColorMapTexture(
-                    terrainMap.colorMap,
-                    MapChunkSize,
-                    MapChunkSize));
+                terrainInfo.UseFlatShading));
             PlaceObjects();
         }
         else if (renderMode == RenderMode.RenderFalloff)
@@ -165,7 +157,7 @@ public class TerrainMapGenerator : MonoBehaviour
     private void PlaceObjects()
     {
         //int chunkSize = MapChunkSize - 1;
-        List<Vector2> points = ObjectPlacement.GeneratePoints(new Vector2(MapChunkSize * terrainInfo.UniformScale, MapChunkSize * terrainInfo.UniformScale), 10f, 30);
+        List<Vector2> points = ObjectPlacement.GeneratePoints(new Vector2(MapChunkSize * terrainInfo.UniformScale, MapChunkSize * terrainInfo.UniformScale), 20f, 30);
         //List<Point> points = ObjectPlacement.GeneratePoints(1337, 10, MapChunkSize * terrainInfo.UniformScale, 30);
         Debug.Log("Mapchunksize " + MapChunkSize);
         Vector3 startPosSpawn = new Vector3(testMeshObject.transform.position.x - (float)((MapChunkSize * terrainInfo.UniformScale) / 2), 60f, testMeshObject.transform.position.z + (float)((MapChunkSize * terrainInfo.UniformScale) / 2));
@@ -179,11 +171,11 @@ public class TerrainMapGenerator : MonoBehaviour
             Ray ray = new Ray(posToSpawn, Vector3.down);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                GameObject objectToPlace = Instantiate(prefabs[ObjectPlacement.RandomBetweenRangeInt(0, prefabs.Count)], testMeshObject.transform);
+                GameObject objectToPlace = Instantiate(prefabs[ObjectPlacement.RandomBetweenRangeInt(0, prefabs.Count)].Prefab, testMeshObject.transform);
                 objectToPlace.transform.position = hit.point - Vector3.up;
                 objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
                 objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
-                objectToPlace.transform.localScale *= ObjectPlacement.RandomBetweenRange(1f, 3f);
+                objectToPlace.transform.localScale *= ObjectPlacement.RandomBetweenRange(0.2f, 1f);
             }
 
             posToSpawn = startPosSpawn;
@@ -202,7 +194,6 @@ public class TerrainMapGenerator : MonoBehaviour
         }
 
 
-        Color[] colorMap = new Color[(MapChunkSize + 2) * (MapChunkSize + 2)];
         for (int y = 0; y < MapChunkSize + 2; y++)
         {
             for (int x = 0; x < MapChunkSize + 2; x++)
@@ -213,23 +204,10 @@ public class TerrainMapGenerator : MonoBehaviour
                 }
 
                 float currentHeight = terrainNoiseMap[x, y];
-                for (int i = 0; i < biomes.Length; i++)
-                {
-                    if (currentHeight >= biomes[i].BiomeHeight)
-                    {
-                        colorMap[y * MapChunkSize + 2 + x] = biomes[i].BiomeColor;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
             }
         }
 
-        List<Vector2> points = ObjectPlacement.GeneratePoints(new Vector2(MapChunkSize, MapChunkSize), 10f, 30);
-
-        return new TerrainMapHolder(terrainNoiseMap, colorMap, points);
+        return new TerrainMapHolder(terrainNoiseMap);
     }
 
     private void OnValidate()
@@ -263,14 +241,29 @@ public class TerrainMapGenerator : MonoBehaviour
 public struct TerrainMapHolder
 {
     public readonly float[,] heightMap;
-    public readonly Color[] colorMap;
-    public readonly List<Vector2> placementPoints;
-
-    public TerrainMapHolder(float[,] heightMaps, Color[] colorMap, List<Vector2> placementPoints)
+    public TerrainMapHolder(float[,] heightMaps)
     {
         this.heightMap = heightMaps;
-        this.colorMap = colorMap;
-        this.placementPoints = placementPoints;
     }
+}
+
+[Serializable]
+public class SpawnObject
+{
+    [SerializeField] private ObjectType objectType;
+    [SerializeField] private GameObject prefab;
+    [SerializeField] private float percentAmount;
+
+    public ObjectType ObjectType { get { return objectType; } }
+    public GameObject Prefab { get { return prefab; } }
+    public float PercentAmount { get { return percentAmount; } }
+}
+
+public enum ObjectType
+{
+    Tree,
+    Bush,
+    Mushroom,
+    Log,
 }
 

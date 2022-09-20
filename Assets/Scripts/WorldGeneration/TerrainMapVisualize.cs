@@ -14,10 +14,9 @@ public class TerrainMapVisualize : MonoBehaviour
         textureRenderer.transform.localScale = new Vector3(texture.width, 1f, texture.height);
     }
 
-    public void RenderMesh(MeshHolder mesh, Texture2D texture)
+    public void RenderMesh(MeshHolder mesh)
     {
         meshFilter.sharedMesh = mesh.GenerateMesh();
-        meshRenderer.sharedMaterial.mainTexture = texture;
         if (meshFilter.gameObject.GetComponent<MeshCollider>())
         {
             DestroyImmediate(meshFilter.gameObject.GetComponent<MeshCollider>());
