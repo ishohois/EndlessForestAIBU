@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: TerrainMaterial
-  m_Shader: {fileID: -6465566751694194690, guid: 46398a4541f202f4e85a64f2138f9d9b,
+  m_Shader: {fileID: -6465566751694194690, guid: 7d42f2d048a46394e8898f7c53da28c8,
     type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
