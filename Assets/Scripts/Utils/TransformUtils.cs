@@ -13,14 +13,13 @@ public class TransformUtils : MonoBehaviour
             return;
         }
 
-        foreach (Transform child in transform)
+        while(transform.childCount > 0)
         {
-            DestroyImmediate(child.gameObject);
+            foreach (Transform child in transform)
+            {
+                DestroyImmediate(child.gameObject);
+            }
         }
     }
 
-    private void OnValidate()
-    {
-        ResetChildren();
-    }
-}
+ }

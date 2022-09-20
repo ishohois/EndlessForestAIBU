@@ -2,20 +2,62 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 public static class ObjectPlacement
 {
     private const int seed = 1337;
     private static System.Random random;
 
-    public static List<Vector2> GeneratePoints(Vector2 sampleRegionSize, float minimumDistanceBetweenPoints, int rejectionTries)
+    //public static List<Vector2> GeneratePoints(Vector2 sampleRegionSize, float minimumDistanceBetweenPoints, int rejectionTries)
+    //{
+    //    random = new System.Random(seed);
+    //    float gridCell = minimumDistanceBetweenPoints / Mathf.Sqrt(2);
+
+    //    int[,] grid = new int[Mathf.CeilToInt(sampleRegionSize.x / gridCell), Mathf.CeilToInt(sampleRegionSize.y / gridCell)];
+    //    List<Vector2> validPoints = new List<Vector2>();
+    //    List<Vector2> spawnPoints = new List<Vector2>();
+
+    //    spawnPoints.Add(sampleRegionSize / 2);
+    //    while (spawnPoints.Count > 0)
+    //    {
+    //        int spawnIndex = random.Next(0, spawnPoints.Count);
+    //        Vector2 spawnCentre = spawnPoints[spawnIndex];
+    //        bool candidateAccepted = false;
+
+    //        for (int i = 0; i < rejectionTries; i++)
+    //        {
+    //            float angle = RandomValue() * Mathf.PI * 2;
+    //            Vector2 dir = new Vector2(Mathf.Sin(angle), Mathf.Cos(angle));
+    //            Vector2 candidatePoint = spawnCentre + dir * RandomBetweenRange(minimumDistanceBetweenPoints, (2 * minimumDistanceBetweenPoints));
+    //            if (IsValid(candidatePoint, sampleRegionSize, gridCell, minimumDistanceBetweenPoints, validPoints, grid))
+    //            {
+    //                validPoints.Add(candidatePoint);
+    //                spawnPoints.Add(candidatePoint);
+    //                grid[(int)(candidatePoint.x / gridCell), (int)(candidatePoint.y / gridCell)] = validPoints.Count;
+    //                candidateAccepted = true;
+    //                break;
+    //            }
+    //        }
+    //        if (!candidateAccepted)
+    //        {
+    //            spawnPoints.RemoveAt(spawnIndex);
+    //        }
+
+    //    }
+
+    //    return validPoints;
+    //}
+
+
+    public static List<Point> GeneratePoints(Point sampleRegionSize, float minimumDistanceBetweenPoints, int rejectionTries)
     {
         random = new System.Random(seed);
         float gridCell = minimumDistanceBetweenPoints / Mathf.Sqrt(2);
 
         int[,] grid = new int[Mathf.CeilToInt(sampleRegionSize.x / gridCell), Mathf.CeilToInt(sampleRegionSize.y / gridCell)];
-        List<Vector2> validPoints = new List<Vector2>();
-        List<Vector2> spawnPoints = new List<Vector2>();
+        List<Point> validPoints = new List<Point>();
+        List<Point> spawnPoints = new List<Point>();
 
         spawnPoints.Add(sampleRegionSize / 2);
         while (spawnPoints.Count > 0)
@@ -48,7 +90,8 @@ public static class ObjectPlacement
         return validPoints;
     }
 
-    private static bool IsValid(Vector2 candidate, Vector2 sampleRegionSize, float cellSize, float radius, List<Vector2> points, int[,] grid)
+
+    private static bool IsValid(Vector2 candidate, Vector2 sampleRegionSize, float cellSize, float radius, List<Point> points, int[,] grid)
     {
         if (candidate.x >= 0 && candidate.x < sampleRegionSize.x && candidate.y >= 0 && candidate.y < sampleRegionSize.y)
         {
@@ -108,6 +151,65 @@ public static class ObjectPlacement
     public static float RandomValue()
     {
         return (float)random.NextDouble();
+    }
+}
+
+public class Point
+{
+    public float x, y;
+    public bool positionTaken;
+
+    public Point() {}
+
+    public Point(Point p)
+    {
+        x = p.x;
+        y = p.y;
+    }
+
+    public Point(Vector2 vector2)
+    {
+        x = vector2.x;
+        y = vector2.y;
+    }
+
+    public static Point operator /(Point a, float b)
+    {
+        if (b == 0)
+        {
+            throw new DivideByZeroException();
+        }
+
+        Point p = new Point(a);
+        p.x /= b;
+        p.y /= b;
+
+        return p;
+    }
+
+    public static Point operator /(Point a, Point b)
+    {
+        if (b.x == 0 || b.y == 0)
+        {
+            throw new DivideByZeroException();
+        }
+
+        Point p = new Point(a);
+        p.x /= b.x;
+        p.y /= b.y;
+
+        return p;
+    }
+
+    public static implicit operator Vector2(Point point)
+    {
+        Vector2 vector2 = new Vector2 { x = point.x , y = point.y};
+        return vector2;
+    }
+
+    public static implicit operator Point(Vector2 vector2)
+    {
+        return new Point(vector2);
     }
 }
 
