@@ -182,7 +182,7 @@ public class RepeatingTerrain : MonoBehaviour
         public void PlaceObjects(float chunkSize, Transform chunkTransform, List<GameObject> prefabs)
         {
             meshCollider = meshObject.AddComponent<MeshCollider>();
-            List<Vector2> points = ObjectPlacement.GeneratePoints(new Vector2(chunkSize * 2.5f, chunkSize), 20f, 30);
+            List<Point> points = ObjectPlacement.GeneratePoints(new Vector2(chunkSize * 2.5f, chunkSize), 20f, 30);
             Vector3 startPosSpawn = new Vector3(chunkTransform.transform.position.x - ((chunkSize)/ 2), 60f, chunkTransform.transform.position.z + ((chunkSize)/ 2));
             Vector3 posToSpawn = startPosSpawn;
 
