@@ -5,7 +5,6 @@ using System;
 
 public class RepeatingTerrain : MonoBehaviour
 {
-
     private const float ViewerMovementChunkUpdateLimit = 25f;
     private const float sqrViewerMovementChunkUpdateLimit = ViewerMovementChunkUpdateLimit * ViewerMovementChunkUpdateLimit;
     private const int MaxNumberOfChunks = 30;
@@ -20,7 +19,6 @@ public class RepeatingTerrain : MonoBehaviour
     private Dictionary<Vector2, TerrainChunk> terrainChunks = new Dictionary<Vector2, TerrainChunk>();
     private Vector2 viewerPositionOld;
 
-    [SerializeField] private LODInfo[] detailLevels;
     [SerializeField] private Material mapMaterial;
     [SerializeField] private List<GameObject> vegetationPrefabs;
 
@@ -32,11 +30,11 @@ public class RepeatingTerrain : MonoBehaviour
     private void Start()
     {
         terrainMapGenerator = FindObjectOfType<TerrainMapGenerator>();
-        maxViewDistance = detailLevels[detailLevels.Length - 1].VisibleDistanceLimit;
+        maxViewDistance = 250f;
         chunkSize = terrainMapGenerator.MapChunkSize - 1;
         chunkVisibleInViewDistance = Mathf.RoundToInt(maxViewDistance / chunkSize);
 
-        GenerateChunks();
+        UpdateVisibleChunks();
     }
 
     private void Update()
@@ -52,22 +50,22 @@ public class RepeatingTerrain : MonoBehaviour
 
     }
 
-    private void GenerateChunks()
-    {
-        int currentChunkCoordX = Mathf.RoundToInt(viewerPosition.x / chunkSize);
-        int currentChunkCoordY = Mathf.RoundToInt(viewerPosition.y / chunkSize);
-        Vector2 chunkInViewPositiom = Vector2.zero;
-        for (int yOffset = -chunkVisibleInViewDistance; yOffset <= chunkVisibleInViewDistance; yOffset++)
-        {
-            for (int xOffset = -chunkVisibleInViewDistance; xOffset <= chunkVisibleInViewDistance; xOffset++)
-            {
-                chunkInViewPositiom.x = currentChunkCoordX + xOffset;
-                chunkInViewPositiom.y = currentChunkCoordY + yOffset;
-                terrainChunks.Add(chunkInViewPositiom, new TerrainChunk(chunkInViewPositiom, chunkSize, detailLevels, transform, mapMaterial, vegetationPrefabs));
-                terrainChunks[chunkInViewPositiom].PlaceObjects(chunkSize, terrainChunks[chunkInViewPositiom].meshObject.transform, vegetationPrefabs);
-            }
-        }
-    }
+    //private void GenerateChunks()
+    //{
+    //    int currentChunkCoordX = Mathf.RoundToInt(viewerPosition.x / chunkSize);
+    //    int currentChunkCoordY = Mathf.RoundToInt(viewerPosition.y / chunkSize);
+    //    Vector2 chunkInViewPositiom = Vector2.zero;
+    //    for (int yOffset = -chunkVisibleInViewDistance; yOffset <= chunkVisibleInViewDistance; yOffset++)
+    //    {
+    //        for (int xOffset = -chunkVisibleInViewDistance; xOffset <= chunkVisibleInViewDistance; xOffset++)
+    //        {
+    //            chunkInViewPositiom.x = currentChunkCoordX + xOffset;
+    //            chunkInViewPositiom.y = currentChunkCoordY + yOffset;
+    //            terrainChunks.Add(chunkInViewPositiom, new TerrainChunk(chunkInViewPositiom, chunkSize,terrainMapGenerator.TerrainInfo.UniformScale, transform, mapMaterial, vegetationPrefabs));
+               
+    //        }
+    //    }
+    //}
 
 
     private void UpdateVisibleChunks()
@@ -94,7 +92,7 @@ public class RepeatingTerrain : MonoBehaviour
                 }
                 else
                 {
-                    terrainChunks.Add(chunkInViewPositiom, new TerrainChunk(chunkInViewPositiom, chunkSize, detailLevels, transform, mapMaterial, vegetationPrefabs));
+                    terrainChunks.Add(chunkInViewPositiom, new TerrainChunk(chunkInViewPositiom, chunkSize, terrainMapGenerator.TerrainInfo.UniformScale, transform, mapMaterial, vegetationPrefabs));
                 }
             }
         }
@@ -123,21 +121,18 @@ public class RepeatingTerrain : MonoBehaviour
         MeshFilter meshFilter;
         MeshCollider meshCollider;
 
-        LODInfo[] detailLevels;
-        LODMesh[] lodMeshes;
-        LODMesh collisionLODMesh;
-
         TerrainMapHolder terrainMap;
         bool terrainMapReceived;
-        int previousLODIndex = -1;
         int size;
+        float scale;
         bool isChunkVisible;
         List<GameObject> prefabs;
         bool hasPlacedObjects;
-        public TerrainChunk(Vector2 viewerPostion, int size, LODInfo[] detailLevels, Transform parent, Material material, List<GameObject> vegetationPrefabs)
+        public TerrainChunk(Vector2 viewerPostion, int size, float scale, Transform parent, Material material, List<GameObject> vegetationPrefabs)
         {
             //Debug.Log("Generated chunks" + generatedChunks);
-            this.detailLevels = detailLevels;
+            //Debug.Break();
+            this.scale = scale;
             this.size = size;
             this.prefabs = vegetationPrefabs;
 
@@ -151,7 +146,7 @@ public class RepeatingTerrain : MonoBehaviour
             meshRenderer.material = material;
 
             meshObject.transform.position = vector3 * terrainMapGenerator.TerrainInfo.UniformScale;
-            meshObject.transform.parent = parent;
+            //meshObject.transform.parent = parent;
             meshObject.transform.localScale = Vector3.one * terrainMapGenerator.TerrainInfo.UniformScale;
             //SetObjectVisibility(false);
 
@@ -169,14 +164,12 @@ public class RepeatingTerrain : MonoBehaviour
 
             UpdateChunk();
 
-            Debug.Log("OnTerrainMapHolderReceived");
-            Debug.Break();
         }
 
         private void OnMeshHolderReceived(MeshHolder meshHolder)
         {
             meshFilter.mesh = meshHolder.GenerateMesh();
-            meshCollider = meshObject.AddComponent<MeshCollider>();
+            PlaceObjects(size * scale, meshObject.transform, prefabs);
         }
 
         private void SetObjectVisibility(bool isVisible)
@@ -186,27 +179,26 @@ public class RepeatingTerrain : MonoBehaviour
                 meshObject.SetActive(isVisible);
         }
 
-        public void PlaceObjects(int chunkSize, Transform chunkTransform, List<GameObject> objectsToPlace)
+        public void PlaceObjects(float chunkSize, Transform chunkTransform, List<GameObject> prefabs)
         {
-            List<Vector2> placementPoints = ObjectPlacement.GeneratePoints(new Vector2(chunkSize, chunkSize), 10f, 30);
-            Vector3 startPosSpawn = new Vector3(chunkTransform.position.x - (float)(chunkSize / 2), 60f, chunkTransform.position.z + (float)(chunkSize / 2));
+            meshCollider = meshObject.AddComponent<MeshCollider>();
+            List<Vector2> points = ObjectPlacement.GeneratePoints(new Vector2(chunkSize * 2.5f, chunkSize), 15f, 30);
+            Vector3 startPosSpawn = new Vector3(chunkTransform.transform.position.x - ((chunkSize)/ 2), 60f, chunkTransform.transform.position.z + ((chunkSize)/ 2));
             Vector3 posToSpawn = startPosSpawn;
 
-            for (int i = 0; i < placementPoints.Count; i++)
+            for (int i = 0; i < points.Count; i++)
             {
-                posToSpawn.x += placementPoints[i].x;
-                posToSpawn.z += placementPoints[i].y - chunkSize;
+                posToSpawn.x += points[i].x;
+                posToSpawn.z += points[i].y - chunkSize;
 
                 Ray ray = new Ray(posToSpawn, Vector3.down);
-
                 if (Physics.Raycast(ray, out RaycastHit hit))
                 {
-                    GameObject objectToPlace = Instantiate(objectsToPlace[0], chunkTransform.transform);
+                    GameObject objectToPlace = Instantiate(prefabs[ObjectPlacement.RandomBetweenRangeInt(0, prefabs.Count)], chunkTransform.transform);
                     objectToPlace.transform.position = hit.point - Vector3.up;
                     objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
-                    objectToPlace.transform.Rotate(Vector3.up, UnityEngine.Random.Range(0, 360));
-                    objectToPlace.transform.localScale *= UnityEngine.Random.Range(1f, 3f);
-                    //objectToPlace.SetActive(false);
+                    objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
+                    objectToPlace.transform.localScale *= ObjectPlacement.RandomBetweenRange(1f, 3f);
                 }
 
                 posToSpawn = startPosSpawn;
@@ -224,6 +216,8 @@ public class RepeatingTerrain : MonoBehaviour
 
         public void UpdateChunk()
         {
+            //Debug.Log("UpdateChunk()");
+            //Debug.Break();
             if (terrainMapReceived == true)
             {
                 float viewerDistanceFromNearestEdge = Mathf.Sqrt(bounds.SqrDistance(viewerPosition));
@@ -231,12 +225,11 @@ public class RepeatingTerrain : MonoBehaviour
 
                 if (visible == true)
                 {
-                    
-
-                    //lastActiveChunks.Add(this);
+                    lastActiveChunks.Add(this);
                 }
 
-                //SetObjectVisibility(visible);
+                ActivateVegetation(visible);
+                SetObjectVisibility(visible);
             }
         }
 
@@ -253,55 +246,9 @@ public class RepeatingTerrain : MonoBehaviour
 
         public void DestroyChunk()
         {
-            detailLevels = null;
-            lodMeshes = null;
-            collisionLODMesh = null;
-
             Destroy(meshObject);
         }
     }
-
-    private class LODMesh
-    {
-        public Mesh mesh;
-        public bool hasRequestedMesh;
-        public bool hasMesh;
-        private int lod;
-        Action updateCallBack;
-
-        public LODMesh(int lod, Action updateCallBack)
-        {
-            this.lod = lod;
-            this.updateCallBack = updateCallBack;
-        }
-
-        public void OnMeshHolderReceived(MeshHolder meshHolder)
-        {
-            mesh = meshHolder.GenerateMesh();
-            hasMesh = true;
-
-            updateCallBack();
-        }
-
-        public void RequestMesh(TerrainMapHolder terrainMap)
-        {
-            hasRequestedMesh = true;
-            terrainMapGenerator.RequestMeshHolder(terrainMap, lod, OnMeshHolderReceived);
-        }
-    }
-
-    [Serializable]
-    public class LODInfo
-    {
-        [SerializeField] private int lod;
-        [SerializeField] private float visibleDistanceLimit;
-        [SerializeField] private bool useForCollider;
-
-        public int Lod { get { return lod; } set { lod = value; } }
-        public float VisibleDistanceLimit { get { return visibleDistanceLimit; } set { visibleDistanceLimit = value; } }
-
-        public bool UseForCollider { get { return useForCollider; } }
-
-    }
+           
 }
 

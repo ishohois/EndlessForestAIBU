@@ -1,64 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
-public class ObjectPlacement : MonoBehaviour
+public static class ObjectPlacement
 {
-
-
-    [SerializeField] private int minimumDistanceBetweenPoints = 10;
-    [SerializeField] private int rejectionTries = 30;
-    [SerializeField] private GameObject treePrefab;
-    [SerializeField] private GameObject meshToSpawnOn;
-
     private const int seed = 1337;
-    private static System.Random random = new System.Random(seed);
-
-    public GameObject TreePrefab { get { return treePrefab; } }
-    public GameObject MeshToSpawnOn { get { return meshToSpawnOn; } }
-
-    //public List<Vector2> GeneratePoints(Vector2 sampleRegionSize)
-    //{
-    //    float gridCell = minimumDistanceBetweenPoints / Mathf.Sqrt(2);
-    //    //Random.InitState(seed);
-
-    //    int[,] grid = new int[Mathf.CeilToInt(sampleRegionSize.x / gridCell), Mathf.CeilToInt(sampleRegionSize.y / gridCell)];
-    //    List<Vector2> validPoints = new List<Vector2>();
-    //    List<Vector2> spawnPoints = new List<Vector2>();
-
-    //    spawnPoints.Add(sampleRegionSize / 2);
-    //    while (spawnPoints.Count > 0)
-    //    {
-    //        int spawnIndex = Random.Range(0, spawnPoints.Count);
-    //        Vector2 spawnCentre = spawnPoints[spawnIndex];
-    //        bool candidateAccepted = false;
-
-    //        for (int i = 0; i < rejectionTries; i++)
-    //        {
-    //            float angle = Random.value * Mathf.PI * 2;
-    //            Vector2 dir = new Vector2(Mathf.Sin(angle), Mathf.Cos(angle));
-    //            Vector2 candidatePoint = spawnCentre + dir * Random.Range(minimumDistanceBetweenPoints, 2 * minimumDistanceBetweenPoints);
-    //            if (IsValid(candidatePoint, sampleRegionSize, gridCell, minimumDistanceBetweenPoints, validPoints, grid))
-    //            {
-    //                validPoints.Add(candidatePoint);
-    //                spawnPoints.Add(candidatePoint);
-    //                grid[(int)(candidatePoint.x / gridCell), (int)(candidatePoint.y / gridCell)] = validPoints.Count;
-    //                candidateAccepted = true;
-    //                break;
-    //            }
-    //        }
-    //        if (!candidateAccepted)
-    //        {
-    //            spawnPoints.RemoveAt(spawnIndex);
-    //        }
-
-    //    }
-
-    //    return validPoints;
-    //}
+    private static System.Random random;
 
     public static List<Vector2> GeneratePoints(Vector2 sampleRegionSize, float minimumDistanceBetweenPoints, int rejectionTries)
     {
+        random = new System.Random(seed);
         float gridCell = minimumDistanceBetweenPoints / Mathf.Sqrt(2);
 
         int[,] grid = new int[Mathf.CeilToInt(sampleRegionSize.x / gridCell), Mathf.CeilToInt(sampleRegionSize.y / gridCell)];
@@ -157,5 +109,5 @@ public class ObjectPlacement : MonoBehaviour
     {
         return (float)random.NextDouble();
     }
-
 }
+

@@ -74,8 +74,6 @@ public class MeshHolder
         }
     }
 
-
-
     private Vector3[] CalculateNormals()
     {
         Vector3[] vertexNormals = new Vector3[vertices.Length];
@@ -120,8 +118,6 @@ public class MeshHolder
         {
             vertexNormals[i].Normalize();
         }
-
-
         return vertexNormals;
     }
 

@@ -11,7 +11,7 @@ public class TerrainMapGenerator : MonoBehaviour
     private Queue<MapTreadInfo<MeshHolder>> meshHolderThreadInfo = new Queue<MapTreadInfo<MeshHolder>>();
     private float[,] fallOffMap;
     private float[,] heightMap;
-    private ObjectPlacement objectPlacement;
+    [SerializeField] private GameObject testMeshObject;
 
     [SerializeField] private NoiseInfoHolder noiseInfo;
     [SerializeField] private TerrainInfoHolder terrainInfo;
@@ -29,14 +29,12 @@ public class TerrainMapGenerator : MonoBehaviour
     public NoiseInfoHolder NoiseInfo { get { return noiseInfo; } }
     public TerrainInfoHolder TerrainInfo { get { return terrainInfo; } }
     public TextureInfoHolder TextureInfo { get { return textureInfo; } }
-    public ObjectPlacement ObjectPlacement { get { return objectPlacement; } }
 
     private void Awake()
     {
         EventSystem.Instance.RegisterListener<UpdatedTerrainInfoEvent>(HandleUpdatedTerrainInfoEvent);
         EventSystem.Instance.RegisterListener<UpdatedNoiseInfoEvent>(HandleUpdatedNoiseInfoEvent);
         //EventSystem.Instance.RegisterListener<UpdatedTextureInfoEvent>(HandleUpdatedTextureInfoEvent);
-        objectPlacement = FindObjectOfType<ObjectPlacement>();
     }
 
     private void HandleUpdatedTerrainInfoEvent(UpdatedTerrainInfoEvent ev)
@@ -167,20 +165,21 @@ public class TerrainMapGenerator : MonoBehaviour
     private void PlaceObjects()
     {
         //int chunkSize = MapChunkSize - 1;
-        List<Vector2> points = ObjectPlacement.GeneratePoints(new Vector2(MapChunkSize, MapChunkSize), 10f, 30);
-        Vector3 startPosSpawn = new Vector3(objectPlacement.transform.position.x - (float)(MapChunkSize / 2), 60f, objectPlacement.transform.position.z + (float)(MapChunkSize / 2));
+        List<Vector2> points = ObjectPlacement.GeneratePoints(new Vector2(MapChunkSize * terrainInfo.UniformScale, MapChunkSize * terrainInfo.UniformScale), 10f, 30);
+        //List<Point> points = ObjectPlacement.GeneratePoints(1337, 10, MapChunkSize * terrainInfo.UniformScale, 30);
+        Debug.Log("Mapchunksize " + MapChunkSize);
+        Vector3 startPosSpawn = new Vector3(testMeshObject.transform.position.x - (float)((MapChunkSize * terrainInfo.UniformScale) / 2), 60f, testMeshObject.transform.position.z + (float)((MapChunkSize * terrainInfo.UniformScale) / 2));
         Vector3 posToSpawn = startPosSpawn;
 
         for (int i = 0; i < points.Count; i++)
         {
             posToSpawn.x += points[i].x;
-            posToSpawn.z += points[i].y - MapChunkSize;
+            posToSpawn.z += points[i].y - MapChunkSize * terrainInfo.UniformScale;
 
             Ray ray = new Ray(posToSpawn, Vector3.down);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                //GameObject tree = Instantiate(objectPlacement.TreePrefab, objectPlacement.transform);
-                GameObject objectToPlace = Instantiate(prefabs[ObjectPlacement.RandomBetweenRangeInt(0, prefabs.Count)], objectPlacement.transform);
+                GameObject objectToPlace = Instantiate(prefabs[ObjectPlacement.RandomBetweenRangeInt(0, prefabs.Count)], testMeshObject.transform);
                 objectToPlace.transform.position = hit.point - Vector3.up;
                 objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
                 objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
@@ -189,6 +188,7 @@ public class TerrainMapGenerator : MonoBehaviour
 
             posToSpawn = startPosSpawn;
         }
+        Debug.Log("Number of points " + points.Count);
     }
 
 
@@ -245,10 +245,6 @@ public class TerrainMapGenerator : MonoBehaviour
             EventSystem.Instance.RegisterListener<UpdatedNoiseInfoEvent>(HandleUpdatedNoiseInfoEvent);
         }
 
-        if (objectPlacement == null)
-        {
-            objectPlacement = FindObjectOfType<ObjectPlacement>();
-        }
     }
 
     private struct MapTreadInfo<T>
