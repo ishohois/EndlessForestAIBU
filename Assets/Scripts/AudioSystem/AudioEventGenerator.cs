@@ -13,9 +13,8 @@ public class AudioEventGenerator : MonoBehaviour
     [SerializeField] private float maxRandomTime = 15f;
     [SerializeField] List<AudioClipType> narrativeCliptypes;
     [SerializeField] List<AudioClipType> ambienceCliptypes;
-  
 
-    List<BaseAudioEvent> audioEvents = new List<BaseAudioEvent>();
+    private List<BaseAudioEvent> audioEvents = new List<BaseAudioEvent>();
 
     private void Start()
     {
@@ -62,8 +61,6 @@ public class AudioEventGenerator : MonoBehaviour
             audioClipType = ambienceCliptypes[Random.Range(0, ambienceCliptypes.Count)];
             audioEvent.AudioClipType = audioClipType;
         }
-
-         
 
         // fire event
         EventSystem.Instance.FireEvent(audioEvent);

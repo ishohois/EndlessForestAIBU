@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 public class RepeatingTerrain : MonoBehaviour
 {
@@ -9,7 +7,7 @@ public class RepeatingTerrain : MonoBehaviour
     private const float sqrViewerMovementChunkUpdateLimit = ViewerMovementChunkUpdateLimit * ViewerMovementChunkUpdateLimit;
     private const int MaxNumberOfChunks = 30;
 
-    private static float maxViewDistance;
+    private static float maxViewDistance = 400;
     private static TerrainMapGenerator terrainMapGenerator;
     private static List<TerrainChunk> lastActiveChunks = new List<TerrainChunk>();
     private static int generatedChunks = 1;
@@ -30,7 +28,6 @@ public class RepeatingTerrain : MonoBehaviour
     private void Start()
     {
         terrainMapGenerator = FindObjectOfType<TerrainMapGenerator>();
-        maxViewDistance = 250f;
         chunkSize = terrainMapGenerator.MapChunkSize - 1;
         chunkVisibleInViewDistance = Mathf.RoundToInt(maxViewDistance / chunkSize);
 
@@ -50,32 +47,12 @@ public class RepeatingTerrain : MonoBehaviour
 
     }
 
-    //private void GenerateChunks()
-    //{
-    //    int currentChunkCoordX = Mathf.RoundToInt(viewerPosition.x / chunkSize);
-    //    int currentChunkCoordY = Mathf.RoundToInt(viewerPosition.y / chunkSize);
-    //    Vector2 chunkInViewPositiom = Vector2.zero;
-    //    for (int yOffset = -chunkVisibleInViewDistance; yOffset <= chunkVisibleInViewDistance; yOffset++)
-    //    {
-    //        for (int xOffset = -chunkVisibleInViewDistance; xOffset <= chunkVisibleInViewDistance; xOffset++)
-    //        {
-    //            chunkInViewPositiom.x = currentChunkCoordX + xOffset;
-    //            chunkInViewPositiom.y = currentChunkCoordY + yOffset;
-    //            terrainChunks.Add(chunkInViewPositiom, new TerrainChunk(chunkInViewPositiom, chunkSize,terrainMapGenerator.TerrainInfo.UniformScale, transform, mapMaterial, vegetationPrefabs));
-               
-    //        }
-    //    }
-    //}
-
-
     private void UpdateVisibleChunks()
     {
         for (int i = 0; i < lastActiveChunks.Count; i++)
         {
             lastActiveChunks[i].SetChunkVisibility(false);
         }
-
-        //lastActiveChunks.Clear();
 
         int currentChunkCoordX = Mathf.RoundToInt(viewerPosition.x / chunkSize);
         int currentChunkCoordY = Mathf.RoundToInt(viewerPosition.y / chunkSize);
@@ -103,10 +80,12 @@ public class RepeatingTerrain : MonoBehaviour
             {
                 if (chunk.IsVisible() == false)
                 {
-                    generatedChunks -= (generatedChunks % MaxNumberOfChunks);
                     chunk.DestroyChunk();
+                    terrainChunks.Remove(chunk.keyPosition);
                 }
             }
+
+            generatedChunks -= (generatedChunks % MaxNumberOfChunks);
         }
 
     }
@@ -128,14 +107,15 @@ public class RepeatingTerrain : MonoBehaviour
         bool isChunkVisible;
         List<SpawnObject> prefabs;
         bool hasPlacedObjects;
+        public Vector2 keyPosition;
+
         public TerrainChunk(Vector2 viewerPostion, int size, float scale, Transform parent, Material material, List<SpawnObject> vegetationPrefabs)
         {
-            //Debug.Log("Generated chunks" + generatedChunks);
-            //Debug.Break();
             this.scale = scale;
             this.size = size;
             this.prefabs = vegetationPrefabs;
 
+            keyPosition = viewerPostion;
             position = viewerPostion * size;
             bounds = new Bounds(position, Vector2.one * size);
             Vector3 vector3 = new Vector3(position.x, 0f, position.y);
@@ -179,24 +159,40 @@ public class RepeatingTerrain : MonoBehaviour
                 meshObject.SetActive(isVisible);
         }
 
+        public void UpdateChunk()
+        {
+            //Debug.Log("UpdateChunk()");
+            //Debug.Break();
+            if (terrainMapReceived == true)
+            {
+                float viewerDistanceFromNearestEdge = Mathf.Sqrt(bounds.SqrDistance(viewerPosition));
+                bool visible = viewerDistanceFromNearestEdge <= maxViewDistance;
+
+                if (visible == true)
+                {
+                    lastActiveChunks.Add(this);
+                }
+
+                //ActivateVegetation(visible);
+                SetObjectVisibility(visible);
+            }
+        }
+
         public void PlaceObjects(float chunkSize, Transform chunkTransform, List<SpawnObject> prefabs)
         {
+            Debug.Log("Generated chunk " + generatedChunks);
             meshCollider = meshObject.AddComponent<MeshCollider>();
             List<Point> points = ObjectPlacement.GeneratePoints(new Vector2(chunkSize * 2.5f, chunkSize), 20f, 30);
-            Vector3 startPosSpawn = new Vector3(chunkTransform.transform.position.x - ((chunkSize)/ 2), 60f, chunkTransform.transform.position.z + ((chunkSize)/ 2));
+            Vector3 startPosSpawn = new Vector3(chunkTransform.transform.position.x - (chunkSize / 2), 60f, chunkTransform.transform.position.z + (chunkSize / 2));
             Vector3 posToSpawn = startPosSpawn;
 
             foreach (SpawnObject spawnObject in prefabs)
             {
-                // for each index in prefabs
-                // count number of iterations based on percent
                 int numberOfIterations = (int)(spawnObject.PercentAmount * points.Count);
-                // iterate logic for placing the objects
-                // use spawnObject scale setting
 
                 for (int i = 0; i < numberOfIterations; i++)
                 {
-                    if (points[i].positionTaken == false)
+                    if (points[i].isPositionTaken == false)
                     {
                         posToSpawn.x += points[i].x;
                         posToSpawn.z += points[i].y - chunkSize;
@@ -215,7 +211,7 @@ public class RepeatingTerrain : MonoBehaviour
                                 objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
                                 objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
                                 objectToPlace.transform.localScale *= ObjectPlacement.RandomBetweenRange(spawnObject.MinScale, spawnObject.MaxScale);
-                                points[i].positionTaken = true;
+                                points[i].isPositionTaken = true;
                             }
                         }
                     }
@@ -226,7 +222,7 @@ public class RepeatingTerrain : MonoBehaviour
                 foreach (Point point in points)
                 {
                     SpawnObject randomSpawn = prefabs[ObjectPlacement.RandomBetweenRangeInt(0, prefabs.Count)];
-                    if (point.positionTaken == false)
+                    if (point.isPositionTaken == false)
                     {
                         posToSpawn.x += point.x;
                         posToSpawn.z += point.y - chunkSize;
@@ -245,41 +241,13 @@ public class RepeatingTerrain : MonoBehaviour
                                 objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
                                 objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
                                 objectToPlace.transform.localScale *= ObjectPlacement.RandomBetweenRange(randomSpawn.MinScale, randomSpawn.MaxScale);
-                                point.positionTaken = true;
+                                point.isPositionTaken = true;
                             }
                         }
                     }
 
                     posToSpawn = startPosSpawn;
                 }
-            }
-        }
-
-        private void ActivateVegetation(bool isVisible)
-        {
-            foreach (Transform child in meshObject.transform)
-            {
-                child.gameObject.SetActive(isVisible);
-            }
-        }
-
-
-        public void UpdateChunk()
-        {
-            //Debug.Log("UpdateChunk()");
-            //Debug.Break();
-            if (terrainMapReceived == true)
-            {
-                float viewerDistanceFromNearestEdge = Mathf.Sqrt(bounds.SqrDistance(viewerPosition));
-                bool visible = viewerDistanceFromNearestEdge <= maxViewDistance;
-
-                if (visible == true)
-                {
-                    lastActiveChunks.Add(this);
-                }
-
-                ActivateVegetation(visible);
-                SetObjectVisibility(visible);
             }
         }
 
@@ -299,6 +267,6 @@ public class RepeatingTerrain : MonoBehaviour
             Destroy(meshObject);
         }
     }
-           
+
 }
 

@@ -156,8 +156,6 @@ public class TerrainMapGenerator : MonoBehaviour
 
     private void PlaceObjects()
     {
-        //int chunkSize = MapChunkSize - 1;
-        //List<Vector2> points = ObjectPlacement.GeneratePoints(new Vector2(MapChunkSize * terrainInfo.UniformScale, MapChunkSize * terrainInfo.UniformScale), 20f, 30);
         List<Point> points = ObjectPlacement.GeneratePoints(new Vector2(MapChunkSize * terrainInfo.UniformScale, MapChunkSize * terrainInfo.UniformScale), 18f, 30);
         Vector3 startPosSpawn = new Vector3(
             testMeshObject.transform.position.x - (float)((MapChunkSize * terrainInfo.UniformScale) / 2),
@@ -175,7 +173,7 @@ public class TerrainMapGenerator : MonoBehaviour
 
             for (int i = 0; i < numberOfIterations; i++)
             {
-                if (points[i].positionTaken == false)
+                if (points[i].isPositionTaken == false)
                 {
                     posToSpawn.x += points[i].x;
                     posToSpawn.z += points[i].y - MapChunkSize * terrainInfo.UniformScale;
@@ -194,7 +192,7 @@ public class TerrainMapGenerator : MonoBehaviour
                             objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
                             objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
                             objectToPlace.transform.localScale *= ObjectPlacement.RandomBetweenRange(spawnObject.MinScale, spawnObject.MaxScale);
-                            points[i].positionTaken = true;
+                            points[i].isPositionTaken = true;
                         }
                     }
                 }
@@ -205,7 +203,7 @@ public class TerrainMapGenerator : MonoBehaviour
             foreach (Point point in points)
             {
                 SpawnObject randomSpawn = prefabs[ObjectPlacement.RandomBetweenRangeInt(0, prefabs.Count)];
-                if (point.positionTaken == false)
+                if (point.isPositionTaken == false)
                 {
                     posToSpawn.x += point.x;
                     posToSpawn.z += point.y - MapChunkSize * terrainInfo.UniformScale;
@@ -224,7 +222,7 @@ public class TerrainMapGenerator : MonoBehaviour
                             objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
                             objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
                             objectToPlace.transform.localScale *= ObjectPlacement.RandomBetweenRange(randomSpawn.MinScale, randomSpawn.MaxScale);
-                            point.positionTaken = true;
+                            point.isPositionTaken = true;
                         }
                     }
                 }
@@ -256,8 +254,6 @@ public class TerrainMapGenerator : MonoBehaviour
                 {
                     terrainNoiseMap[x, y] = Mathf.Clamp01(terrainNoiseMap[x, y] - fallOffMap[x, y]);
                 }
-
-                float currentHeight = terrainNoiseMap[x, y];
             }
         }
 
@@ -304,7 +300,7 @@ public struct TerrainMapHolder
 [Serializable]
 public class SpawnObject
 {
-    //[SerializeField] private ObjectType objectType;
+    [SerializeField] private ObjectType objectType;
     [SerializeField] private GameObject prefab;
     [Range(0, 1)]
     [SerializeField] private float percentAmount;
@@ -313,7 +309,7 @@ public class SpawnObject
     [SerializeField] private float minSpawnHeightLimit;
     [SerializeField] private float maxSpawnHeightLimit;
 
-    //public ObjectType ObjectType { get { return objectType; } }
+    public ObjectType ObjectType { get { return objectType; } }
     public GameObject Prefab { get { return prefab; } }
     public float PercentAmount { get { return percentAmount; } }
     public float MinScale { get { return minScale; } }
