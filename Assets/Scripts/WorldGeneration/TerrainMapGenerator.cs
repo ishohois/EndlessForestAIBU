@@ -158,14 +158,12 @@ public class TerrainMapGenerator : MonoBehaviour
     {
         //int chunkSize = MapChunkSize - 1;
         //List<Vector2> points = ObjectPlacement.GeneratePoints(new Vector2(MapChunkSize * terrainInfo.UniformScale, MapChunkSize * terrainInfo.UniformScale), 20f, 30);
-        List<Point> points = ObjectPlacement.GeneratePoints(new Vector2(MapChunkSize * terrainInfo.UniformScale, MapChunkSize * terrainInfo.UniformScale), 20f, 30);
+        List<Point> points = ObjectPlacement.GeneratePoints(new Vector2(MapChunkSize * terrainInfo.UniformScale, MapChunkSize * terrainInfo.UniformScale), 18f, 30);
         Vector3 startPosSpawn = new Vector3(
-            testMeshObject.transform.position.x - (float)((MapChunkSize * terrainInfo.UniformScale) / 2), 
-            60f, 
+            testMeshObject.transform.position.x - (float)((MapChunkSize * terrainInfo.UniformScale) / 2),
+            60f,
             testMeshObject.transform.position.z + (float)((MapChunkSize * terrainInfo.UniformScale) / 2));
         Vector3 posToSpawn = startPosSpawn;
-
-
 
         foreach (SpawnObject spawnObject in prefabs)
         {
@@ -203,10 +201,40 @@ public class TerrainMapGenerator : MonoBehaviour
 
                 posToSpawn = startPosSpawn;
             }
+
+            foreach (Point point in points)
+            {
+                SpawnObject randomSpawn = prefabs[ObjectPlacement.RandomBetweenRangeInt(0, prefabs.Count)];
+                if (point.positionTaken == false)
+                {
+                    posToSpawn.x += point.x;
+                    posToSpawn.z += point.y - MapChunkSize * terrainInfo.UniformScale;
+
+                    Ray ray = new Ray(posToSpawn, Vector3.down);
+                    if (Physics.Raycast(ray, out RaycastHit hit))
+                    {
+                        if (hit.point.y > randomSpawn.MaxSpawnHeightLimit || hit.point.y < randomSpawn.MinSpawnHeightLimit)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            GameObject objectToPlace = Instantiate(randomSpawn.Prefab, testMeshObject.transform);
+                            objectToPlace.transform.position = hit.point - Vector3.up;
+                            objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
+                            objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
+                            objectToPlace.transform.localScale *= ObjectPlacement.RandomBetweenRange(randomSpawn.MinScale, randomSpawn.MaxScale);
+                            point.positionTaken = true;
+                        }
+                    }
+                }
+
+                posToSpawn = startPosSpawn;
+            }
         }
 
 
-        //Debug.Log("Number of points " + points.Count);
+        Debug.Log("Number of points " + points.Count);
     }
 
 
@@ -276,7 +304,7 @@ public struct TerrainMapHolder
 [Serializable]
 public class SpawnObject
 {
-    [SerializeField] private ObjectType objectType;
+    //[SerializeField] private ObjectType objectType;
     [SerializeField] private GameObject prefab;
     [Range(0, 1)]
     [SerializeField] private float percentAmount;
@@ -285,7 +313,7 @@ public class SpawnObject
     [SerializeField] private float minSpawnHeightLimit;
     [SerializeField] private float maxSpawnHeightLimit;
 
-    public ObjectType ObjectType { get { return objectType; } }
+    //public ObjectType ObjectType { get { return objectType; } }
     public GameObject Prefab { get { return prefab; } }
     public float PercentAmount { get { return percentAmount; } }
     public float MinScale { get { return minScale; } }
@@ -300,7 +328,8 @@ public enum ObjectType
     Tree2,
     Tree3,
     Tree4,
-    Bush,
+    Bush1,
+    Bush2,
     Mushroom,
     Log1,
     Log2,

@@ -20,7 +20,7 @@ public class RepeatingTerrain : MonoBehaviour
     private Vector2 viewerPositionOld;
 
     [SerializeField] private Material mapMaterial;
-    [SerializeField] private List<GameObject> vegetationPrefabs;
+    [SerializeField] private List<SpawnObject> vegetationPrefabs;
 
     public static Vector2 viewerPosition;
 
@@ -126,9 +126,9 @@ public class RepeatingTerrain : MonoBehaviour
         int size;
         float scale;
         bool isChunkVisible;
-        List<GameObject> prefabs;
+        List<SpawnObject> prefabs;
         bool hasPlacedObjects;
-        public TerrainChunk(Vector2 viewerPostion, int size, float scale, Transform parent, Material material, List<GameObject> vegetationPrefabs)
+        public TerrainChunk(Vector2 viewerPostion, int size, float scale, Transform parent, Material material, List<SpawnObject> vegetationPrefabs)
         {
             //Debug.Log("Generated chunks" + generatedChunks);
             //Debug.Break();
@@ -179,29 +179,79 @@ public class RepeatingTerrain : MonoBehaviour
                 meshObject.SetActive(isVisible);
         }
 
-        public void PlaceObjects(float chunkSize, Transform chunkTransform, List<GameObject> prefabs)
+        public void PlaceObjects(float chunkSize, Transform chunkTransform, List<SpawnObject> prefabs)
         {
             meshCollider = meshObject.AddComponent<MeshCollider>();
             List<Point> points = ObjectPlacement.GeneratePoints(new Vector2(chunkSize * 2.5f, chunkSize), 20f, 30);
             Vector3 startPosSpawn = new Vector3(chunkTransform.transform.position.x - ((chunkSize)/ 2), 60f, chunkTransform.transform.position.z + ((chunkSize)/ 2));
             Vector3 posToSpawn = startPosSpawn;
 
-            for (int i = 0; i < points.Count; i++)
+            foreach (SpawnObject spawnObject in prefabs)
             {
-                posToSpawn.x += points[i].x;
-                posToSpawn.z += points[i].y - chunkSize;
+                // for each index in prefabs
+                // count number of iterations based on percent
+                int numberOfIterations = (int)(spawnObject.PercentAmount * points.Count);
+                // iterate logic for placing the objects
+                // use spawnObject scale setting
 
-                Ray ray = new Ray(posToSpawn, Vector3.down);
-                if (Physics.Raycast(ray, out RaycastHit hit))
+                for (int i = 0; i < numberOfIterations; i++)
                 {
-                    GameObject objectToPlace = Instantiate(prefabs[ObjectPlacement.RandomBetweenRangeInt(0, prefabs.Count)], chunkTransform.transform);
-                    objectToPlace.transform.position = hit.point - Vector3.up;
-                    objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
-                    objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
-                    //objectToPlace.transform.localScale *= ObjectPlacement.RandomBetweenRange(1f, 3f);
+                    if (points[i].positionTaken == false)
+                    {
+                        posToSpawn.x += points[i].x;
+                        posToSpawn.z += points[i].y - chunkSize;
+
+                        Ray ray = new Ray(posToSpawn, Vector3.down);
+                        if (Physics.Raycast(ray, out RaycastHit hit))
+                        {
+                            if (hit.point.y > spawnObject.MaxSpawnHeightLimit || hit.point.y < spawnObject.MinSpawnHeightLimit)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                GameObject objectToPlace = Instantiate(spawnObject.Prefab, meshObject.transform);
+                                objectToPlace.transform.position = hit.point - Vector3.up;
+                                objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
+                                objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
+                                objectToPlace.transform.localScale *= ObjectPlacement.RandomBetweenRange(spawnObject.MinScale, spawnObject.MaxScale);
+                                points[i].positionTaken = true;
+                            }
+                        }
+                    }
+
+                    posToSpawn = startPosSpawn;
                 }
 
-                posToSpawn = startPosSpawn;
+                foreach (Point point in points)
+                {
+                    SpawnObject randomSpawn = prefabs[ObjectPlacement.RandomBetweenRangeInt(0, prefabs.Count)];
+                    if (point.positionTaken == false)
+                    {
+                        posToSpawn.x += point.x;
+                        posToSpawn.z += point.y - chunkSize;
+
+                        Ray ray = new Ray(posToSpawn, Vector3.down);
+                        if (Physics.Raycast(ray, out RaycastHit hit))
+                        {
+                            if (hit.point.y > randomSpawn.MaxSpawnHeightLimit || hit.point.y < randomSpawn.MinSpawnHeightLimit)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                GameObject objectToPlace = Instantiate(randomSpawn.Prefab, meshObject.transform);
+                                objectToPlace.transform.position = hit.point - Vector3.up;
+                                objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
+                                objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
+                                objectToPlace.transform.localScale *= ObjectPlacement.RandomBetweenRange(randomSpawn.MinScale, randomSpawn.MaxScale);
+                                point.positionTaken = true;
+                            }
+                        }
+                    }
+
+                    posToSpawn = startPosSpawn;
+                }
             }
         }
 
