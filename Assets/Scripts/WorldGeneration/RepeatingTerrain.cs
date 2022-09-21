@@ -5,11 +5,12 @@ public class RepeatingTerrain : MonoBehaviour
 {
     private const float ViewerMovementChunkUpdateLimit = 25f;
     private const float sqrViewerMovementChunkUpdateLimit = ViewerMovementChunkUpdateLimit * ViewerMovementChunkUpdateLimit;
-    private const int MaxNumberOfChunks = 30;
 
     private static float maxViewDistance = 250f;
+    private static float activationDistance = 400f;
     private static TerrainMapGenerator terrainMapGenerator;
-    private static List<TerrainChunk> lastActiveChunks = new List<TerrainChunk>();
+    private static List<TerrainChunk> chunksWithObjects = new List<TerrainChunk>();
+    private List<TerrainChunk> chunksToDelete = new List<TerrainChunk>();
     private static int generatedChunks = 1;
 
     private int chunkSize;
@@ -67,35 +68,29 @@ public class RepeatingTerrain : MonoBehaviour
             }
         }
 
-        foreach (var chunk in terrainChunks)
+        foreach(var chunk in chunksWithObjects)
         {
-            chunk.Value.UpdateChunk();
-            if (chunk.Value.IsVisible() == false)
+            chunk.UpdateChunk();
+            if(chunk.DeactivateChunk == true)
             {
-                chunk.Value.DespawnObjects();
+                chunk.DestroyChunk();
+                chunksToDelete.Add(chunk);
             }
         }
 
-        //if (generatedChunks >= MaxNumberOfChunks)
-        //{
-        //    foreach (var chunk in lastActiveChunks)
-        //    {
-        //        if (chunk.IsVisible() == false)
-        //        {
-        //            chunk.DestroyChunk();
-        //            terrainChunks.Remove(chunk.keyPosition);
-        //        }
-        //    }
-
-        //    generatedChunks -= (generatedChunks % MaxNumberOfChunks);
-        //}
+        foreach(var chunk in chunksToDelete)
+        {
+            chunksWithObjects.Remove(chunk);
+            terrainChunks.Remove(chunk.keyPosition);
+        }
 
     }
 
     private class TerrainChunk
     {
         public GameObject meshObject;
-        Vector2 position;
+        public Vector2 position;
+        public Vector2 keyPosition;
         Bounds bounds;
 
         MeshRenderer meshRenderer;
@@ -112,6 +107,7 @@ public class RepeatingTerrain : MonoBehaviour
         bool hasPlacedObjects;
         List<Point> pointsOfObjectsToBePlaced = new List<Point>();
         List<PooledObject> pooledObjects = new List<PooledObject>();
+        public bool DeactivateChunk;
 
         public TerrainChunk(Vector2 viewerPostion, int size, float scale, Transform parent, Material material, List<SpawnObject> vegetationPrefabs)
         {
@@ -119,6 +115,7 @@ public class RepeatingTerrain : MonoBehaviour
             this.size = size;
             this.prefabs = vegetationPrefabs;
 
+            keyPosition = viewerPostion;
             position = viewerPostion * size;
             bounds = new Bounds(position, Vector2.one * size);
             Vector3 vector3 = new Vector3(position.x, 0f, position.y);
@@ -163,18 +160,17 @@ public class RepeatingTerrain : MonoBehaviour
             {
                 float viewerDistanceFromNearestEdge = Mathf.Sqrt(bounds.SqrDistance(viewerPosition));
                 bool visible = viewerDistanceFromNearestEdge < maxViewDistance;
+                DeactivateChunk = viewerDistanceFromNearestEdge > activationDistance;
                 if (hasPlacedPositions == true && hasPlacedObjects == false)
                 {
                     PlaceObjects();
                 }
-                //else if (hasPlacedPositions == true && hasPlacedObjects == true)
-                //{
-                //    DespawnObjects();
-                //}
+
+                if(visible == false) { }
+
                 SetObjectVisibility(visible);
             }
 
-            Debug.Log("Viewer " + viewerPosition + "visible " + isChunkVisible);
         }
 
         private void PlacePositions(float chunkSize, Transform chunkTransform, List<SpawnObject> prefabs)
@@ -251,6 +247,7 @@ public class RepeatingTerrain : MonoBehaviour
         private void PlaceObjects()
         {
             hasPlacedObjects = true;
+            chunksWithObjects.Add(this);
             float chunkSize = (float)(size * scale);
             Vector3 startPosSpawn = new Vector3(
                meshObject.transform.position.x - (chunkSize / 2),
