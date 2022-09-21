@@ -18,7 +18,6 @@ public class RepeatingTerrain : MonoBehaviour
     private Vector2 viewerPositionOld;
 
     [SerializeField] private Material mapMaterial;
-    [SerializeField] private List<SpawnObject> vegetationPrefabs;
 
     public static Vector2 viewerPosition;
 
