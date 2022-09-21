@@ -75,7 +75,7 @@ Material:
     - _SrcBlend: 1
     - _Surface: 0
     - _WiggleStrength: 0.2
-    - _WindSpeed: 0.42
+    - _WindSpeed: 0.7
     - _WindStrength: 0.481
     - _ZWrite: 1
     m_Colors:
