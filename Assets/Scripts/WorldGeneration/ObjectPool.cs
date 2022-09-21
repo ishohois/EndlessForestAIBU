@@ -77,6 +77,8 @@ public class ObjectPool : MonoBehaviour
     public void Despawn(PooledObject pooledObject)
     {
         objectPools[pooledObject.ObjectType].Enqueue(pooledObject);
+        pooledObject.GameObject.transform.position = Vector3.zero;
+        pooledObject.GameObject.transform.localScale = Vector3.one;
         pooledObject.GameObject.SetActive(false);
         pooledObject.IsActive = false;
     }

@@ -30,7 +30,6 @@ public class RepeatingTerrain : MonoBehaviour
         terrainMapGenerator = FindObjectOfType<TerrainMapGenerator>();
         chunkSize = terrainMapGenerator.MapChunkSize - 1;
         chunkVisibleInViewDistance = Mathf.RoundToInt(maxViewDistance / chunkSize);
-
         UpdateVisibleChunks();
     }
 
@@ -51,7 +50,7 @@ public class RepeatingTerrain : MonoBehaviour
     {
         //for (int i = 0; i < lastActiveChunks.Count; i++)
         //{
-        //    lastActiveChunks[i].SetChunkVisibility(false);
+        //    lastActiveChunks[i].UpdateChunk();
         //}
 
         int currentChunkCoordX = Mathf.RoundToInt(viewerPosition.x / chunkSize);
@@ -113,6 +112,7 @@ public class RepeatingTerrain : MonoBehaviour
         List<SpawnObject> prefabs;
         bool hasPlacedPositions;
         bool hasPlacedObjects;
+        bool hasBeenAddedToActive;
         public Vector2 keyPosition;
         List<Point> pointsOfObjectsToBePlaced = new List<Point>();
         List<PooledObject> pooledObjects = new List<PooledObject>();
@@ -134,9 +134,7 @@ public class RepeatingTerrain : MonoBehaviour
             meshRenderer.material = material;
 
             meshObject.transform.position = vector3 * terrainMapGenerator.TerrainInfo.UniformScale;
-            //meshObject.transform.parent = parent;
             meshObject.transform.localScale = Vector3.one * terrainMapGenerator.TerrainInfo.UniformScale;
-            //SetObjectVisibility(false);
 
             terrainMapGenerator.RequestTerrainMapHolder(position, OnTerrainMapHolderReceived);
 
@@ -147,7 +145,6 @@ public class RepeatingTerrain : MonoBehaviour
         {
             this.terrainMap = terrainMapHolder;
             terrainMapReceived = true;
-
             terrainMapGenerator.RequestMeshHolder(terrainMap, 0, OnMeshHolderReceived);
         }
 
@@ -167,23 +164,21 @@ public class RepeatingTerrain : MonoBehaviour
 
         public void UpdateChunk()
         {
-            //Debug.Log("UpdateChunk()");
-            //Debug.Break();
             if (terrainMapReceived == true)
             {
                 float viewerDistanceFromNearestEdge = Mathf.Sqrt(bounds.SqrDistance(viewerPosition));
                 bool visible = viewerDistanceFromNearestEdge <= maxViewDistance;
-                //if (visible == true)
+                //if (visible == true && hasBeenAddedToActive == false)
                 //{
+                //    hasBeenAddedToActive = true;
                 //    lastActiveChunks.Add(this);
                 //}
-                //ActivateVegetation(visible);
 
-                if (hasPlacedPositions == true && visible  == true && hasPlacedObjects == false)
+                if (hasPlacedPositions == true && visible == true && hasPlacedObjects == false)
                 {
                     PlaceObjects();
                 }
-                else if(visible == false)
+                else if (visible == false && hasPlacedPositions == true)
                 {
                     DespawnObjects();
                 }
@@ -294,7 +289,6 @@ public class RepeatingTerrain : MonoBehaviour
                         PooledObject pooledObject = ObjectPool.Instance.SpawnGameObject(spawnObject.ObjectType);
                         pooledObjects.Add(pooledObject);
                         GameObject objectToPlace = pooledObject.GameObject;
-                        objectToPlace.transform.parent = meshObject.transform;
                         objectToPlace.transform.position = hit.point - Vector3.up;
                         objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
                         objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
@@ -306,9 +300,9 @@ public class RepeatingTerrain : MonoBehaviour
 
         public void DespawnObjects()
         {
-            foreach(PooledObject pooledObject in pooledObjects)
+            //Debug.Log("TerrainChunk despawned objects" + meshObject.name);
+            foreach (PooledObject pooledObject in pooledObjects)
             {
-                pooledObject.GameObject.transform.localScale = Vector3.one;
                 ObjectPool.Instance.Despawn(pooledObject);
             }
             pooledObjects.Clear();
@@ -328,6 +322,7 @@ public class RepeatingTerrain : MonoBehaviour
 
         public void DestroyChunk()
         {
+            DespawnObjects();
             Destroy(meshObject);
         }
     }

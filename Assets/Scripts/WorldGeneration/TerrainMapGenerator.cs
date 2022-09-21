@@ -10,7 +10,6 @@ public class TerrainMapGenerator : MonoBehaviour
     private Queue<MapTreadInfo<TerrainMapHolder>> terrainMapHolderThreadInfo = new Queue<MapTreadInfo<TerrainMapHolder>>();
     private Queue<MapTreadInfo<MeshHolder>> meshHolderThreadInfo = new Queue<MapTreadInfo<MeshHolder>>();
     private float[,] fallOffMap;
-    private float[,] heightMap;
     [SerializeField] private GameObject testMeshObject;
 
     [SerializeField] private NoiseInfoHolder noiseInfo;
@@ -22,7 +21,6 @@ public class TerrainMapGenerator : MonoBehaviour
     [SerializeField] private Material terrainMaterial;
 
     [SerializeField] private TerrainMapVisualize mapVisualizer;
-    //[SerializeField] private List<GameObject> prefabs;
     [SerializeField] private List<SpawnObject> prefabs;
 
     public bool autoUpdate;
@@ -34,7 +32,6 @@ public class TerrainMapGenerator : MonoBehaviour
     {
         EventSystem.Instance.RegisterListener<UpdatedTerrainInfoEvent>(HandleUpdatedTerrainInfoEvent);
         EventSystem.Instance.RegisterListener<UpdatedNoiseInfoEvent>(HandleUpdatedNoiseInfoEvent);
-        //EventSystem.Instance.RegisterListener<UpdatedTextureInfoEvent>(HandleUpdatedTextureInfoEvent);
     }
 
     private void HandleUpdatedTerrainInfoEvent(UpdatedTerrainInfoEvent ev)
@@ -52,11 +49,6 @@ public class TerrainMapGenerator : MonoBehaviour
             RenderMapInEditor();
         }
     }
-
-    //private void HandleUpdatedTextureInfoEvent(UpdatedTextureInfoEvent ev)
-    //{
-    //    textureInfo.ApplyToMaterial(terrainMaterial);
-    //}
 
     public int MapChunkSize
     {
@@ -271,12 +263,10 @@ public class TerrainMapGenerator : MonoBehaviour
     private TerrainMapHolder GenerateTerrainMap(Vector2 chunkCentre)
     {
         float[,] terrainNoiseMap = NoiseGenerator.GenerateNoise(MapChunkSize + 2, chunkCentre, noiseInfo);
-        heightMap = terrainNoiseMap;
         if (terrainInfo.UseFallOff)
         {
             fallOffMap = FalloffGenerator.GenerateFallOffMap(MapChunkSize + 2);
         }
-
 
         for (int y = 0; y < MapChunkSize + 2; y++)
         {
