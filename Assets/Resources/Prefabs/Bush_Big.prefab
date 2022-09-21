@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5238177498515880695}
   - component: {fileID: 8022399569451765309}
   - component: {fileID: 4643779635068138714}
+  - component: {fileID: 1053512003552417656}
   m_Layer: 0
   m_Name: Bush_Big
   m_TagString: Untagged
@@ -97,3 +98,15 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 4.65
   m_Center: {x: -0.11011195, y: 1.4289844, z: 4.43289}
+--- !u!114 &1053512003552417656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8382805942936596456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

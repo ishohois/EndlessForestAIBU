@@ -13,6 +13,7 @@ public class Point
     {
         x = p.x;
         y = p.y;
+        isPositionTaken = false;
     }
 
     public Point(Vector2 v)

@@ -7,7 +7,7 @@ public class RepeatingTerrain : MonoBehaviour
     private const float sqrViewerMovementChunkUpdateLimit = ViewerMovementChunkUpdateLimit * ViewerMovementChunkUpdateLimit;
     private const int MaxNumberOfChunks = 30;
 
-    private static float maxViewDistance = 400;
+    private static float maxViewDistance = 250f;
     private static TerrainMapGenerator terrainMapGenerator;
     private static List<TerrainChunk> lastActiveChunks = new List<TerrainChunk>();
     private static int generatedChunks = 1;
@@ -49,10 +49,10 @@ public class RepeatingTerrain : MonoBehaviour
 
     private void UpdateVisibleChunks()
     {
-        for (int i = 0; i < lastActiveChunks.Count; i++)
-        {
-            lastActiveChunks[i].SetChunkVisibility(false);
-        }
+        //for (int i = 0; i < lastActiveChunks.Count; i++)
+        //{
+        //    lastActiveChunks[i].SetChunkVisibility(false);
+        //}
 
         int currentChunkCoordX = Mathf.RoundToInt(viewerPosition.x / chunkSize);
         int currentChunkCoordY = Mathf.RoundToInt(viewerPosition.y / chunkSize);
@@ -74,19 +74,24 @@ public class RepeatingTerrain : MonoBehaviour
             }
         }
 
-        if (generatedChunks >= MaxNumberOfChunks)
+        foreach (var chunk in terrainChunks)
         {
-            foreach (var chunk in lastActiveChunks)
-            {
-                if (chunk.IsVisible() == false)
-                {
-                    chunk.DestroyChunk();
-                    terrainChunks.Remove(chunk.keyPosition);
-                }
-            }
-
-            generatedChunks -= (generatedChunks % MaxNumberOfChunks);
+            chunk.Value.UpdateChunk();
         }
+
+        //if (generatedChunks >= MaxNumberOfChunks)
+        //{
+        //    foreach (var chunk in lastActiveChunks)
+        //    {
+        //        if (chunk.IsVisible() == false)
+        //        {
+        //            chunk.DestroyChunk();
+        //            terrainChunks.Remove(chunk.keyPosition);
+        //        }
+        //    }
+
+        //    generatedChunks -= (generatedChunks % MaxNumberOfChunks);
+        //}
 
     }
 
@@ -106,8 +111,11 @@ public class RepeatingTerrain : MonoBehaviour
         float scale;
         bool isChunkVisible;
         List<SpawnObject> prefabs;
+        bool hasPlacedPositions;
         bool hasPlacedObjects;
         public Vector2 keyPosition;
+        List<Point> pointsOfObjectsToBePlaced = new List<Point>();
+        List<PooledObject> pooledObjects = new List<PooledObject>();
 
         public TerrainChunk(Vector2 viewerPostion, int size, float scale, Transform parent, Material material, List<SpawnObject> vegetationPrefabs)
         {
@@ -141,15 +149,13 @@ public class RepeatingTerrain : MonoBehaviour
             terrainMapReceived = true;
 
             terrainMapGenerator.RequestMeshHolder(terrainMap, 0, OnMeshHolderReceived);
-
-            UpdateChunk();
-
         }
 
         private void OnMeshHolderReceived(MeshHolder meshHolder)
         {
             meshFilter.mesh = meshHolder.GenerateMesh();
-            PlaceObjects(size * scale, meshObject.transform, prefabs);
+            PlacePositions(size * scale, meshObject.transform, prefabs);
+            UpdateChunk();
         }
 
         private void SetObjectVisibility(bool isVisible)
@@ -167,26 +173,36 @@ public class RepeatingTerrain : MonoBehaviour
             {
                 float viewerDistanceFromNearestEdge = Mathf.Sqrt(bounds.SqrDistance(viewerPosition));
                 bool visible = viewerDistanceFromNearestEdge <= maxViewDistance;
-
-                if (visible == true)
-                {
-                    lastActiveChunks.Add(this);
-                }
-
+                //if (visible == true)
+                //{
+                //    lastActiveChunks.Add(this);
+                //}
                 //ActivateVegetation(visible);
+
+                if (hasPlacedPositions == true && visible  == true && hasPlacedObjects == false)
+                {
+                    PlaceObjects();
+                }
+                else if(visible == false)
+                {
+                    DespawnObjects();
+                }
                 SetObjectVisibility(visible);
             }
         }
 
-        public void PlaceObjects(float chunkSize, Transform chunkTransform, List<SpawnObject> prefabs)
+        private void PlacePositions(float chunkSize, Transform chunkTransform, List<SpawnObject> prefabs)
         {
-            Debug.Log("Generated chunk " + generatedChunks);
             meshCollider = meshObject.AddComponent<MeshCollider>();
-            List<Point> points = ObjectPlacement.GeneratePoints(new Vector2(chunkSize * 2.5f, chunkSize), 20f, 30);
-            Vector3 startPosSpawn = new Vector3(chunkTransform.transform.position.x - (chunkSize / 2), 60f, chunkTransform.transform.position.z + (chunkSize / 2));
+            hasPlacedPositions = true;
+            List<Point> points = ObjectPlacement.GeneratePoints(new Vector2(chunkSize, chunkSize), 15f, 30);
+            Vector3 startPosSpawn = new Vector3(
+                chunkTransform.transform.position.x - ((chunkSize) / 2),
+                60f,
+                chunkTransform.transform.position.z + ((chunkSize) / 2));
             Vector3 posToSpawn = startPosSpawn;
 
-            foreach (SpawnObject spawnObject in prefabs)
+            foreach (SpawnObject spawnObject in ObjectPool.Instance.Prefabs)
             {
                 int numberOfIterations = (int)(spawnObject.PercentAmount * points.Count);
 
@@ -202,53 +218,101 @@ public class RepeatingTerrain : MonoBehaviour
                         {
                             if (hit.point.y > spawnObject.MaxSpawnHeightLimit || hit.point.y < spawnObject.MinSpawnHeightLimit)
                             {
+                                posToSpawn = startPosSpawn;
                                 continue;
                             }
                             else
                             {
-                                GameObject objectToPlace = Instantiate(spawnObject.Prefab, meshObject.transform);
-                                objectToPlace.transform.position = hit.point - Vector3.up;
-                                objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
-                                objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
-                                objectToPlace.transform.localScale *= ObjectPlacement.RandomBetweenRange(spawnObject.MinScale, spawnObject.MaxScale);
                                 points[i].isPositionTaken = true;
+                                points[i].objectType = spawnObject.ObjectType;
                             }
                         }
                     }
-
-                    posToSpawn = startPosSpawn;
-                }
-
-                foreach (Point point in points)
-                {
-                    SpawnObject randomSpawn = prefabs[ObjectPlacement.RandomBetweenRangeInt(0, prefabs.Count)];
-                    if (point.isPositionTaken == false)
-                    {
-                        posToSpawn.x += point.x;
-                        posToSpawn.z += point.y - chunkSize;
-
-                        Ray ray = new Ray(posToSpawn, Vector3.down);
-                        if (Physics.Raycast(ray, out RaycastHit hit))
-                        {
-                            if (hit.point.y > randomSpawn.MaxSpawnHeightLimit || hit.point.y < randomSpawn.MinSpawnHeightLimit)
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                GameObject objectToPlace = Instantiate(randomSpawn.Prefab, meshObject.transform);
-                                objectToPlace.transform.position = hit.point - Vector3.up;
-                                objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
-                                objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
-                                objectToPlace.transform.localScale *= ObjectPlacement.RandomBetweenRange(randomSpawn.MinScale, randomSpawn.MaxScale);
-                                point.isPositionTaken = true;
-                            }
-                        }
-                    }
-
                     posToSpawn = startPosSpawn;
                 }
             }
+
+            foreach (Point point in points)
+            {
+                SpawnObject randomSpawn = ObjectPool.Instance.Prefabs[ObjectPlacement.RandomBetweenRangeInt(0, prefabs.Count)];
+                if (point.isPositionTaken == false)
+                {
+                    posToSpawn.x += point.x;
+                    posToSpawn.z += point.y - chunkSize;
+
+                    Ray ray = new Ray(posToSpawn, Vector3.down);
+                    if (Physics.Raycast(ray, out RaycastHit hit))
+                    {
+                        if (hit.point.y > randomSpawn.MaxSpawnHeightLimit || hit.point.y < randomSpawn.MinSpawnHeightLimit)
+                        {
+                            posToSpawn = startPosSpawn;
+                            continue;
+                        }
+                        else
+                        {
+                            point.isPositionTaken = true;
+                            point.objectType = randomSpawn.ObjectType;
+                        }
+                    }
+                }
+                posToSpawn = startPosSpawn;
+            }
+
+            pointsOfObjectsToBePlaced = points;
+            Debug.Log(points.Count);
+        }
+
+        private void PlaceObjects()
+        {
+            hasPlacedObjects = true;
+            float chunkSize = (float)(size * scale);
+            Vector3 startPosSpawn = new Vector3(
+               meshObject.transform.position.x - (chunkSize / 2),
+               60f,
+               meshObject.transform.position.z + (chunkSize / 2));
+            Vector3 posToSpawn = startPosSpawn;
+
+            foreach (Point point in pointsOfObjectsToBePlaced)
+            {
+                if (point.objectType != ObjectType.Default)
+                {
+                    SpawnObject spawnObject = ObjectPool.Instance.SpawnObjects[point.objectType];
+
+                    posToSpawn.x += point.x;
+                    posToSpawn.z += point.y - chunkSize;
+
+                    Ray ray = new Ray(posToSpawn, Vector3.down);
+                    if (Physics.Raycast(ray, out RaycastHit hit))
+                    {
+
+                        if (hit.transform.gameObject.GetComponent<VegetationTag>() == true)
+                        {
+                            posToSpawn = startPosSpawn;
+                            continue;
+                        }
+
+                        PooledObject pooledObject = ObjectPool.Instance.SpawnGameObject(spawnObject.ObjectType);
+                        pooledObjects.Add(pooledObject);
+                        GameObject objectToPlace = pooledObject.GameObject;
+                        objectToPlace.transform.parent = meshObject.transform;
+                        objectToPlace.transform.position = hit.point - Vector3.up;
+                        objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
+                        objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
+                    }
+                }
+                posToSpawn = startPosSpawn;
+            }
+        }
+
+        public void DespawnObjects()
+        {
+            foreach(PooledObject pooledObject in pooledObjects)
+            {
+                pooledObject.GameObject.transform.localScale = Vector3.one;
+                ObjectPool.Instance.Despawn(pooledObject);
+            }
+            pooledObjects.Clear();
+            hasPlacedObjects = false;
         }
 
         public void SetChunkVisibility(bool isVisible)

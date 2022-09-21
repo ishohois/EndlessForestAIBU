@@ -89,6 +89,7 @@ public class TerrainMapGenerator : MonoBehaviour
                 terrainInfo.HeightCurve,
                 levelOfDetalInEditor,
                 terrainInfo.UseFlatShading));
+            PlacePositions();
             PlaceObjects();
         }
         else if (renderMode == RenderMode.RenderFalloff)
@@ -154,22 +155,20 @@ public class TerrainMapGenerator : MonoBehaviour
         }
     }
 
-    private void PlaceObjects()
+    List<Point> pointsOfObjectsToBePlaced = new List<Point>();
+
+    private void PlacePositions()
     {
-        List<Point> points = ObjectPlacement.GeneratePoints(new Vector2(MapChunkSize * terrainInfo.UniformScale, MapChunkSize * terrainInfo.UniformScale), 18f, 30);
+        List<Point> points = ObjectPlacement.GeneratePoints(new Vector2(MapChunkSize * terrainInfo.UniformScale, MapChunkSize * terrainInfo.UniformScale), 15f, 30);
         Vector3 startPosSpawn = new Vector3(
             testMeshObject.transform.position.x - (float)((MapChunkSize * terrainInfo.UniformScale) / 2),
             60f,
             testMeshObject.transform.position.z + (float)((MapChunkSize * terrainInfo.UniformScale) / 2));
         Vector3 posToSpawn = startPosSpawn;
 
-        foreach (SpawnObject spawnObject in prefabs)
+        foreach (SpawnObject spawnObject in ObjectPool.Instance.Prefabs)
         {
-            // for each index in prefabs
-            // count number of iterations based on percent
             int numberOfIterations = (int)(spawnObject.PercentAmount * points.Count);
-            // iterate logic for placing the objects
-            // use spawnObject scale setting
 
             for (int i = 0; i < numberOfIterations; i++)
             {
@@ -183,56 +182,89 @@ public class TerrainMapGenerator : MonoBehaviour
                     {
                         if (hit.point.y > spawnObject.MaxSpawnHeightLimit || hit.point.y < spawnObject.MinSpawnHeightLimit)
                         {
+                            posToSpawn = startPosSpawn;
                             continue;
                         }
                         else
                         {
-                            GameObject objectToPlace = Instantiate(spawnObject.Prefab, testMeshObject.transform);
-                            objectToPlace.transform.position = hit.point - Vector3.up;
-                            objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
-                            objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
-                            objectToPlace.transform.localScale *= ObjectPlacement.RandomBetweenRange(spawnObject.MinScale, spawnObject.MaxScale);
                             points[i].isPositionTaken = true;
+                            points[i].objectType = spawnObject.ObjectType;
                         }
                     }
                 }
-
-                posToSpawn = startPosSpawn;
-            }
-
-            foreach (Point point in points)
-            {
-                SpawnObject randomSpawn = prefabs[ObjectPlacement.RandomBetweenRangeInt(0, prefabs.Count)];
-                if (point.isPositionTaken == false)
-                {
-                    posToSpawn.x += point.x;
-                    posToSpawn.z += point.y - MapChunkSize * terrainInfo.UniformScale;
-
-                    Ray ray = new Ray(posToSpawn, Vector3.down);
-                    if (Physics.Raycast(ray, out RaycastHit hit))
-                    {
-                        if (hit.point.y > randomSpawn.MaxSpawnHeightLimit || hit.point.y < randomSpawn.MinSpawnHeightLimit)
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            GameObject objectToPlace = Instantiate(randomSpawn.Prefab, testMeshObject.transform);
-                            objectToPlace.transform.position = hit.point - Vector3.up;
-                            objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
-                            objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
-                            objectToPlace.transform.localScale *= ObjectPlacement.RandomBetweenRange(randomSpawn.MinScale, randomSpawn.MaxScale);
-                            point.isPositionTaken = true;
-                        }
-                    }
-                }
-
                 posToSpawn = startPosSpawn;
             }
         }
 
+        foreach (Point point in points)
+        {
+            SpawnObject randomSpawn = ObjectPool.Instance.Prefabs[ObjectPlacement.RandomBetweenRangeInt(0, prefabs.Count)];
+            if (point.isPositionTaken == false)
+            {
+                posToSpawn.x += point.x;
+                posToSpawn.z += point.y - MapChunkSize * terrainInfo.UniformScale;
 
-        Debug.Log("Number of points " + points.Count);
+                Ray ray = new Ray(posToSpawn, Vector3.down);
+                if (Physics.Raycast(ray, out RaycastHit hit))
+                {
+                    if (hit.point.y > randomSpawn.MaxSpawnHeightLimit || hit.point.y < randomSpawn.MinSpawnHeightLimit)
+                    {
+                        posToSpawn = startPosSpawn;
+                        continue;
+                    }
+                    else
+                    {
+                        point.isPositionTaken = true;
+                        point.objectType = randomSpawn.ObjectType;
+                    }
+                }
+            }
+            posToSpawn = startPosSpawn;
+        }
+
+        pointsOfObjectsToBePlaced = points;
+        Debug.Log(points.Count);
+    }
+
+
+
+    private void PlaceObjects()
+    {
+        Vector3 startPosSpawn = new Vector3(
+           testMeshObject.transform.position.x - (float)((MapChunkSize * terrainInfo.UniformScale) / 2),
+           60f,
+           testMeshObject.transform.position.z + (float)((MapChunkSize * terrainInfo.UniformScale) / 2));
+        Vector3 posToSpawn = startPosSpawn;
+
+        foreach (Point point in pointsOfObjectsToBePlaced)
+        {
+            if (point.objectType != ObjectType.Default)
+            {
+                SpawnObject spawnObject = ObjectPool.Instance.SpawnObjects[point.objectType];
+
+                posToSpawn.x += point.x;
+                posToSpawn.z += point.y - MapChunkSize * terrainInfo.UniformScale;
+
+                Ray ray = new Ray(posToSpawn, Vector3.down);
+                if (Physics.Raycast(ray, out RaycastHit hit))
+                {
+
+                    if (hit.transform.gameObject.GetComponent<VegetationTag>() == true)
+                    {
+                        posToSpawn = startPosSpawn;
+                        continue;
+                    }
+
+                    GameObject objectToPlace = ObjectPool.Instance.SpawnGameObject(spawnObject.ObjectType).GameObject;
+                    objectToPlace.transform.parent = testMeshObject.transform;
+                    objectToPlace.transform.position = hit.point - Vector3.up;
+                    objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
+                    objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
+                    objectToPlace.transform.localScale *= ObjectPlacement.RandomBetweenRange(spawnObject.MinScale, spawnObject.MaxScale);
+                }
+            }
+            posToSpawn = startPosSpawn;
+        }
     }
 
 
@@ -320,6 +352,7 @@ public class SpawnObject
 
 public enum ObjectType
 {
+    Default,
     Tree1,
     Tree2,
     Tree3,
