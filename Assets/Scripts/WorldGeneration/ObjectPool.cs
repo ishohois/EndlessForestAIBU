@@ -32,7 +32,6 @@ public class ObjectPool : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
-
     }
 
     private void Awake()
