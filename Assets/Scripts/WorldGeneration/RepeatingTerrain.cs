@@ -62,7 +62,7 @@ public class RepeatingTerrain : MonoBehaviour
                 }
                 else
                 {
-                    terrainChunks.Add(chunkInViewPositiom, new TerrainChunk(chunkInViewPositiom, chunkSize, terrainMapGenerator.TerrainInfo.UniformScale, transform, mapMaterial, vegetationPrefabs));
+                    terrainChunks.Add(chunkInViewPositiom, new TerrainChunk(chunkInViewPositiom, chunkSize, terrainMapGenerator.TerrainInfo.UniformScale, transform, mapMaterial, ObjectPool.Instance.Prefabs));
                 }
             }
         }
