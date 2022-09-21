@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class LightManager : MonoBehaviour
 {
-
+    private static LightManager instance;
+    
     [SerializeField] private GameObject directionalLight;
 
     public GameObject DirectionalLight { get { return directionalLight; } }
 
-    private static LightManager instance;
     public static LightManager Instance
     {
         get

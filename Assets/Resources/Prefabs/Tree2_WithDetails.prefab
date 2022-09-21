@@ -9,7 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 301605138249074596}
-  m_Layer: 0
+  - component: {fileID: 4342888355311360356}
+  - component: {fileID: 1897010050757601613}
+  m_Layer: 8
   m_Name: Tree2_WithDetails
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -56,6 +58,37 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4342888355311360356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4535306869731278631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1897010050757601613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4535306869731278631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d9482ba2cbca9040ab1c14be6ce9b02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  godRayParticles: {fileID: 6516713727619330006, guid: a9017e95b7fb6ff44bf851ae72d3777b,
+    type: 3}
+  fallingLeavesParticles: {fileID: 349864053728509925, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
+    type: 3}
+  defaultMaterial: {fileID: 2100000, guid: 6c3b493b28ac1304db6ea5974c036eb3, type: 2}
+  changeColorMaterial: {fileID: 2100000, guid: c58fc99ceec2dd84da15213b94c5c9bd, type: 2}
+  meshRenderer: {fileID: 2075527565721013822}
 --- !u!1001 &2798696850198616885
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2103,16 +2136,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8003609564784549526, guid: 730a8dd954474a240a9c1e4629d08911,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 775222b7c10e4d346ac5b82f54fac87a, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 730a8dd954474a240a9c1e4629d08911, type: 3}
 --- !u!4 &829588379477771999 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6808165750898878529, guid: 730a8dd954474a240a9c1e4629d08911,
+    type: 3}
+  m_PrefabInstance: {fileID: 6194767884118290078}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &2075527565721013822 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 5275401551195365536, guid: 730a8dd954474a240a9c1e4629d08911,
     type: 3}
   m_PrefabInstance: {fileID: 6194767884118290078}
   m_PrefabAsset: {fileID: 0}

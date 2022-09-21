@@ -83,6 +83,7 @@ public class ObjectPool : MonoBehaviour
         if((vegetationAssets = pooledObject.GameObject.GetComponent<VegetationAssets>()) != null){
             vegetationAssets.FallingLeavesParticles?.SetActive(false);
             vegetationAssets.GodRayParticles?.SetActive(false);
+            vegetationAssets.MeshRenderer.material = vegetationAssets.DefaultMaterial;
         }
     }
 }
