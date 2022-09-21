@@ -1133,6 +1133,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: FallingLeaves
       objectReference: {fileID: 0}
+    - target: {fileID: 349864053728509925, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 349864053728509928, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
         type: 3}
       propertyPath: m_RootOrder
