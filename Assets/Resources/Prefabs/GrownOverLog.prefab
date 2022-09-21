@@ -190,7 +190,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1069854273353015052}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -20.729595, y: 1.0161238, z: 20.675241}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -326,9 +326,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 0}
-  fallingLeavesParticles: {fileID: 0}
-  chonkyBoy: {fileID: 0}
 --- !u!1 &1069854273625036199
 GameObject:
   m_ObjectHideFlags: 0
@@ -840,9 +837,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 0}
-  fallingLeavesParticles: {fileID: 0}
-  chonkyBoy: {fileID: 0}
 --- !u!1 &1069854274094297190
 GameObject:
   m_ObjectHideFlags: 0
@@ -939,9 +933,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 0}
-  fallingLeavesParticles: {fileID: 0}
-  chonkyBoy: {fileID: 0}
 --- !u!1 &1069854274103541684
 GameObject:
   m_ObjectHideFlags: 0
@@ -1121,9 +1112,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 0}
-  fallingLeavesParticles: {fileID: 0}
-  chonkyBoy: {fileID: 0}
 --- !u!1 &1069854274235420606
 GameObject:
   m_ObjectHideFlags: 0
@@ -1303,9 +1291,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 0}
-  fallingLeavesParticles: {fileID: 0}
-  chonkyBoy: {fileID: 0}
 --- !u!1 &1069854274489609879
 GameObject:
   m_ObjectHideFlags: 0
@@ -1568,9 +1553,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 0}
-  fallingLeavesParticles: {fileID: 0}
-  chonkyBoy: {fileID: 0}
 --- !u!1 &1069854274682453678
 GameObject:
   m_ObjectHideFlags: 0
@@ -1667,9 +1649,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 0}
-  fallingLeavesParticles: {fileID: 0}
-  chonkyBoy: {fileID: 0}
 --- !u!1 &1069854274784561419
 GameObject:
   m_ObjectHideFlags: 0
@@ -2029,9 +2008,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 0}
-  fallingLeavesParticles: {fileID: 0}
-  chonkyBoy: {fileID: 0}
 --- !u!1 &3723017811515632089
 GameObject:
   m_ObjectHideFlags: 0
@@ -2128,9 +2104,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 0}
-  fallingLeavesParticles: {fileID: 0}
-  chonkyBoy: {fileID: 0}
 --- !u!1 &3963193787071620488
 GameObject:
   m_ObjectHideFlags: 0
@@ -2242,9 +2215,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 0}
-  fallingLeavesParticles: {fileID: 0}
-  chonkyBoy: {fileID: 0}
 --- !u!1 &6775116115591143597
 GameObject:
   m_ObjectHideFlags: 0
@@ -2341,9 +2311,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 0}
-  fallingLeavesParticles: {fileID: 0}
-  chonkyBoy: {fileID: 0}
 --- !u!1 &6775116115765811572
 GameObject:
   m_ObjectHideFlags: 0
@@ -2440,9 +2407,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 0}
-  fallingLeavesParticles: {fileID: 0}
-  chonkyBoy: {fileID: 0}
 --- !u!1 &6775116115935540666
 GameObject:
   m_ObjectHideFlags: 0
@@ -2539,9 +2503,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 0}
-  fallingLeavesParticles: {fileID: 0}
-  chonkyBoy: {fileID: 0}
 --- !u!1 &6775116116850796086
 GameObject:
   m_ObjectHideFlags: 0
@@ -2638,9 +2599,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 0}
-  fallingLeavesParticles: {fileID: 0}
-  chonkyBoy: {fileID: 0}
 --- !u!1 &6775116117059066699
 GameObject:
   m_ObjectHideFlags: 0
@@ -2737,9 +2695,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 0}
-  fallingLeavesParticles: {fileID: 0}
-  chonkyBoy: {fileID: 0}
 --- !u!1 &6775116117480589958
 GameObject:
   m_ObjectHideFlags: 0
@@ -2836,9 +2791,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 0}
-  fallingLeavesParticles: {fileID: 0}
-  chonkyBoy: {fileID: 0}
 --- !u!1 &6775116117625484667
 GameObject:
   m_ObjectHideFlags: 0
@@ -2935,9 +2887,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 0}
-  fallingLeavesParticles: {fileID: 0}
-  chonkyBoy: {fileID: 0}
 --- !u!1 &6953819115318971941
 GameObject:
   m_ObjectHideFlags: 0
@@ -3034,9 +2983,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 0}
-  fallingLeavesParticles: {fileID: 0}
-  chonkyBoy: {fileID: 0}
 --- !u!1 &8935470061277049547
 GameObject:
   m_ObjectHideFlags: 0
