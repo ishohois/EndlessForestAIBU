@@ -322,7 +322,6 @@ public class RepeatingTerrain : MonoBehaviour
 
         public void DespawnObjects()
         {
-            //Debug.Log("TerrainChunk despawned objects" + meshObject.name);
             foreach (PooledObject pooledObject in pooledObjects)
             {
                 ObjectPool.Instance.Despawn(pooledObject);
