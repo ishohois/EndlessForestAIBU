@@ -11,13 +11,15 @@ GameObject:
   - component: {fileID: 9058742991239637998}
   - component: {fileID: 5339234323325969483}
   - component: {fileID: 7925264548502311041}
+  - component: {fileID: 2709078967119839028}
+  - component: {fileID: 4127731254939608449}
   m_Layer: 0
   m_Name: ChonkyBoy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &9058742991239637998
 Transform:
   m_ObjectHideFlags: 0
@@ -83,3 +85,31 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!136 &2709078967119839028
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8573954761422123348}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 10.32
+  m_Height: 11.698301
+  m_Direction: 1
+  m_Center: {x: -0.74130225, y: 5.816368, z: -2.130642}
+--- !u!114 &4127731254939608449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8573954761422123348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 948cf23b4b3091545ba40dde53d8320f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClipType: 1
+  resetTimeHasPlayedClip: 5

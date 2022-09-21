@@ -79,6 +79,13 @@ public class ObjectPool : MonoBehaviour
         pooledObject.GameObject.transform.position = Vector3.zero;
         pooledObject.GameObject.SetActive(false);
         pooledObject.IsActive = false;
+
+        VegetationTag vegetationTag;
+        if((vegetationTag = pooledObject.GameObject.GetComponent<VegetationTag>()) != null){
+            vegetationTag.FallingLeavesParticles?.SetActive(false);
+            vegetationTag.ChonkyBoy?.SetActive(false);
+            vegetationTag.GodRayParticles?.SetActive(false);
+        }
     }
 
 }

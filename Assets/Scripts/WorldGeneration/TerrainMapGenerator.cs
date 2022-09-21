@@ -344,6 +344,7 @@ public class SpawnObject
     [SerializeField] private float maxSpawnHeightLimit;
     [SerializeField] private float percentToHaveGodRays;
     [SerializeField] private float percentToHaveFallingLeaves;
+    [SerializeField] private float percentToHaveChonky;
 
     public ObjectType ObjectType { get { return objectType; } }
     public GameObject Prefab { get { return prefab; } }
@@ -354,6 +355,7 @@ public class SpawnObject
     public float MaxSpawnHeightLimit { get { return maxSpawnHeightLimit; } }
     public float PercentToHaveGodRays { get { return percentToHaveGodRays; } }
     public float PercentToHaveFallingLeaves { get { return percentToHaveFallingLeaves; } }
+    public float PercentToHaveChonky { get { return percentToHaveChonky; } }
 }
 
 public enum ObjectType

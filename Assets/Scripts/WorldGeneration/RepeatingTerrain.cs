@@ -276,16 +276,51 @@ public class RepeatingTerrain : MonoBehaviour
                         objectToPlace.transform.position = hit.point - Vector3.up;
                         objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
                         objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
-                        if (spawnObject.ObjectType == ObjectType.Tree3)
+
+                        if (spawnObject.ObjectType == ObjectType.Tree1)
+                        {
+                            float chanceToSpawnChonky = ObjectPlacement.RandomValue();
+                            if (chanceToSpawnChonky >= spawnObject.PercentToHaveChonky)
+                            {
+                                objectToPlace.GetComponent<VegetationTag>().ChonkyBoy.SetActive(true);
+                            }
+                        }
+
+                        if (spawnObject.ObjectType == ObjectType.Tree2)
                         {
                             float chanceToSpawnGodRays = ObjectPlacement.RandomValue();
-                            if (chanceToSpawnGodRays > spawnObject.PercentToHaveGodRays)
+                            if (chanceToSpawnGodRays >= spawnObject.PercentToHaveGodRays)
                             {
                                 objectToPlace.GetComponent<VegetationTag>().GodRayParticles.SetActive(true);
                                 Vector3 eulerAngles = LightManager.Instance.DirectionalLight.transform.rotation.eulerAngles;
                                 eulerAngles.x = -eulerAngles.x;
-                                eulerAngles.y = -eulerAngles.y;
+                                objectToPlace.GetComponent<VegetationTag>().GodRayParticles.transform.rotation = Quaternion.Euler(Vector3.zero);
+                                objectToPlace.GetComponent<VegetationTag>().GodRayParticles.transform.localRotation = Quaternion.Euler(Vector3.zero);
                                 objectToPlace.GetComponent<VegetationTag>().GodRayParticles.transform.rotation = Quaternion.Euler(eulerAngles);
+                            }
+                        }
+
+                        if (spawnObject.ObjectType == ObjectType.Tree3)
+                        {
+                            float chanceToSpawnGodRays = ObjectPlacement.RandomValue();
+                            if (chanceToSpawnGodRays >= spawnObject.PercentToHaveGodRays)
+                            {
+                                objectToPlace.GetComponent<VegetationTag>().GodRayParticles.SetActive(true);
+                                Vector3 eulerAngles = LightManager.Instance.DirectionalLight.transform.rotation.eulerAngles;
+                                eulerAngles.x = -eulerAngles.x;
+                                objectToPlace.GetComponent<VegetationTag>().GodRayParticles.transform.rotation = Quaternion.Euler(Vector3.zero);
+                                objectToPlace.GetComponent<VegetationTag>().GodRayParticles.transform.localRotation = Quaternion.Euler(Vector3.zero);
+                                objectToPlace.GetComponent<VegetationTag>().GodRayParticles.transform.rotation = Quaternion.Euler(eulerAngles);
+                            }
+
+                        }
+
+                        if (spawnObject.ObjectType == ObjectType.Tree4 || spawnObject.ObjectType == ObjectType.Tree1 || spawnObject.ObjectType == ObjectType.Tree3)
+                        {
+                            float chanceToHaveFallingLeaves = ObjectPlacement.RandomValue();
+                            if (chanceToHaveFallingLeaves >= spawnObject.PercentToHaveFallingLeaves)
+                            {
+                                objectToPlace.GetComponent<VegetationTag>().FallingLeavesParticles.SetActive(true);
                             }
                         }
                     }

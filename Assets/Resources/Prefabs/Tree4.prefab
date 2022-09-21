@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &731239404895469275
 Transform:
   m_ObjectHideFlags: 0
@@ -48,6 +48,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  godRayParticles: {fileID: 6516713727619330006, guid: a9017e95b7fb6ff44bf851ae72d3777b,
+    type: 3}
+  fallingLeavesParticles: {fileID: 2336936186510302632}
+  chonkyBoy: {fileID: 8573954761422123348, guid: c9c648f1990f7fc41b91c49144c2dd63,
+    type: 3}
 --- !u!136 &8301044635167642788
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -314,6 +319,12 @@ PrefabInstance:
 --- !u!4 &2336936186510302629 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 349864053728509928, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
+    type: 3}
+  m_PrefabInstance: {fileID: 2644880257162256973}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2336936186510302632 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 349864053728509925, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
     type: 3}
   m_PrefabInstance: {fileID: 2644880257162256973}
   m_PrefabAsset: {fileID: 0}
