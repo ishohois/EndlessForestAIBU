@@ -191,6 +191,7 @@ GameObject:
   - component: {fileID: 6808165750898878529}
   - component: {fileID: 7596335993325325800}
   - component: {fileID: 2083001968001847539}
+  - component: {fileID: 282690241365092158}
   m_Layer: 0
   m_Name: Tree2
   m_TagString: Untagged
@@ -228,12 +229,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 6516713727619330006, guid: a9017e95b7fb6ff44bf851ae72d3777b,
-    type: 3}
-  fallingLeavesParticles: {fileID: 349864053728509925, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
-    type: 3}
-  chonkyBoy: {fileID: 8573954761422123348, guid: c9c648f1990f7fc41b91c49144c2dd63,
-    type: 3}
 --- !u!136 &2083001968001847539
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -248,6 +243,22 @@ CapsuleCollider:
   m_Height: 13.017822
   m_Direction: 1
   m_Center: {x: -0.46953034, y: 5.205183, z: -0.89070034}
+--- !u!114 &282690241365092158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6138588817361122043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d9482ba2cbca9040ab1c14be6ce9b02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  godRayParticles: {fileID: 6516713727619330006, guid: a9017e95b7fb6ff44bf851ae72d3777b,
+    type: 3}
+  fallingLeavesParticles: {fileID: 349864053728509925, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
+    type: 3}
 --- !u!1001 &332384082741813214
 PrefabInstance:
   m_ObjectHideFlags: 0
