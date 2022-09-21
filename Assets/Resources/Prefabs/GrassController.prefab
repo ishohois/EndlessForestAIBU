@@ -49,7 +49,7 @@ MonoBehaviour:
   - {fileID: 7503594297644079923, guid: 199b632e1c27a8e41b85576798ba363a, type: 3}
   - {fileID: 1259620249287022321, guid: ced0a69bdbed998458a4651968f937ee, type: 3}
   - {fileID: 5827357740325247306, guid: f1de2f005e5dc1244876bb28b4b336d0, type: 3}
-  grassNumber: 200
-  grassAreaWidth: 150
-  grassAreaHeight: 150
+  grassNumber: 150
+  grassAreaWidth: 100
+  grassAreaHeight: 100
   interactionTag: Player
