@@ -52,6 +52,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   godRayParticles: {fileID: 275797679902344076}
   fallingLeavesParticles: {fileID: 3690428853518037678}
+  chonkyBoy: {fileID: 0}
 --- !u!136 &5123956579796463031
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -363,31 +364,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6516713727619330008, guid: a9017e95b7fb6ff44bf851ae72d3777b,
-        type: 3}
-      propertyPath: ShapeModule.type
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6516713727619330008, guid: a9017e95b7fb6ff44bf851ae72d3777b,
-        type: 3}
-      propertyPath: ShapeModule.m_Scale.x
-      value: 10.58
-      objectReference: {fileID: 0}
-    - target: {fileID: 6516713727619330008, guid: a9017e95b7fb6ff44bf851ae72d3777b,
-        type: 3}
-      propertyPath: ShapeModule.m_Scale.y
-      value: 7.08
-      objectReference: {fileID: 0}
-    - target: {fileID: 6516713727619330008, guid: a9017e95b7fb6ff44bf851ae72d3777b,
-        type: 3}
-      propertyPath: ShapeModule.m_Scale.z
-      value: 12.07
-      objectReference: {fileID: 0}
-    - target: {fileID: 6516713727619330008, guid: a9017e95b7fb6ff44bf851ae72d3777b,
-        type: 3}
-      propertyPath: ShapeModule.radiusThickness
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6516713727619330009, guid: a9017e95b7fb6ff44bf851ae72d3777b,
         type: 3}
       propertyPath: m_RootOrder
@@ -396,17 +372,17 @@ PrefabInstance:
     - target: {fileID: 6516713727619330009, guid: a9017e95b7fb6ff44bf851ae72d3777b,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6516713727619330009, guid: a9017e95b7fb6ff44bf851ae72d3777b,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 14.86
+      value: 16.05
       objectReference: {fileID: 0}
     - target: {fileID: 6516713727619330009, guid: a9017e95b7fb6ff44bf851ae72d3777b,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.57
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6516713727619330009, guid: a9017e95b7fb6ff44bf851ae72d3777b,
         type: 3}
