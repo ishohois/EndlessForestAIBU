@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4342021161390517978
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4342021161390517977}
+  - component: {fileID: 4342021161390517976}
+  m_Layer: 0
+  m_Name: AudioLibrarySystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4342021161390517977
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4342021161390517978}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.21754, y: 3.0304544, z: -2.229165}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4342021161390517976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4342021161390517978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e31015f5b358094ebda9187e547eca8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClips:
+  - audioClipType: 0
+    audioClip: {fileID: 8300000, guid: c40c5cea3032ebc408530cdb025405d1, type: 3}
+  - audioClipType: 1
+    audioClip: {fileID: 8300000, guid: a4c61a4000fbf2f4d970339e3c254d41, type: 3}
+  - audioClipType: 2
+    audioClip: {fileID: 8300000, guid: c3e89a541a2a32d40af9db119d7f2486, type: 3}
+  - audioClipType: 3
+    audioClip: {fileID: 8300000, guid: ec732c5cc17de494282ebf30b7b5a91b, type: 3}
+  - audioClipType: 7
+    audioClip: {fileID: 8300000, guid: e847f5099d53da84992adc79df38735c, type: 3}
+  - audioClipType: 12
+    audioClip: {fileID: 8300000, guid: c8e3a5a7666605c40b72d313bbabc52f, type: 3}
+  - audioClipType: 4
+    audioClip: {fileID: 8300000, guid: a8fcd7f8bf58bda4f94e079fb88e7b07, type: 3}
+  - audioClipType: 6
+    audioClip: {fileID: 8300000, guid: 6877166db2f9ab24d8f07149c326d00e, type: 3}
+  - audioClipType: 13
+    audioClip: {fileID: 8300000, guid: a5bc6e8bbbf45b748925cd761eb63a16, type: 3}
+  - audioClipType: 15
+    audioClip: {fileID: 8300000, guid: 4f412ec6b3c3dda4c99fc3de574b728f, type: 3}
+  - audioClipType: 16
+    audioClip: {fileID: 8300000, guid: 4f77625abe467e64a9bc32c266d6022d, type: 3}
+  - audioClipType: 14
+    audioClip: {fileID: 8300000, guid: 09a4e5709ea15ce4fb7ab2f926c5ea52, type: 3}
+  - audioClipType: 9
+    audioClip: {fileID: 8300000, guid: 491cd7940de6f0245bc54bdb1e98c950, type: 3}
+  - audioClipType: 8
+    audioClip: {fileID: 8300000, guid: 3f6085801038d92449d2a42ba77c89b1, type: 3}
+  - audioClipType: 11
+    audioClip: {fileID: 8300000, guid: 00f7bbaccaf95db4d975322fe8d629d8, type: 3}
+  - audioClipType: 10
+    audioClip: {fileID: 8300000, guid: 3c6a66b6304decb478128b8e60c1d713, type: 3}
