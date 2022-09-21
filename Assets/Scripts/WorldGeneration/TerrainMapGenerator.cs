@@ -354,5 +354,9 @@ public enum ObjectType
     Log2,
     Rock1,
     Rock2,
+    Grass,
+    Flower1, 
+    Flower2,
+    Trunk
 }
 

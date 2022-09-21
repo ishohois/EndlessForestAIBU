@@ -14,7 +14,6 @@ public class AudioAmbientListener : MonoBehaviour
 
     private void HandleAmbientAudioEventt(AmbientAudioEvent ev)
     {
-        Debug.Log("HandleAmbientAudioEventt " + ev.AudioClipType);
         audioSource.PlayOneShot(AudioLibrarySystem.Instance.SoundClip(ev.AudioClipType));
     }
 }

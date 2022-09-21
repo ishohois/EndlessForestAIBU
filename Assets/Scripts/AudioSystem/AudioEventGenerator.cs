@@ -38,7 +38,6 @@ public class AudioEventGenerator : MonoBehaviour
 
     private void FireAudioEvent()
     {
-        Debug.Log("AudioEventGenerator.FireAudioEvent()");
 
         // choose eventtype
         BaseAudioEvent audioEvent = audioEvents[Random.Range(0, audioEvents.Count)];
