@@ -304,6 +304,12 @@ public class RepeatingTerrain : MonoBehaviour
                             continue;
                         }
 
+                        if (hit.point.y > spawnObject.MaxSpawnHeightLimit || hit.point.y < spawnObject.MinSpawnHeightLimit)
+                        {
+                            posToSpawn = startPosSpawn;
+                            continue;
+                        }
+
                         PooledObject pooledObject = ObjectPool.Instance.SpawnGameObject(spawnObject.ObjectType);
                         pooledObjects.Add(pooledObject);
                         GameObject objectToPlace = pooledObject.GameObject;

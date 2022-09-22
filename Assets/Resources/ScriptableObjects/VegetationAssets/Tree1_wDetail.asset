@@ -21,5 +21,5 @@ MonoBehaviour:
   minSpawnHeightLimit: -1
   maxSpawnHeightLimit: 8
   thresholdGodrays: 0
-  thresholdFallingLeaves: 0.75
+  thresholdFallingLeaves: 0.85
   thresholdGrassPatches: 0

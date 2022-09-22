@@ -17,9 +17,9 @@ MonoBehaviour:
   prefab: {fileID: 5331901717834053984, guid: ae61809c271d539409d6f17b64e1dc2f, type: 3}
   percentAmount: 0.05
   minScale: 0.9
-  maxScale: 1.2
+  maxScale: 1.3
   minSpawnHeightLimit: 2
   maxSpawnHeightLimit: 8
   thresholdGodrays: 0
-  thresholdFallingLeaves: 0.75
+  thresholdFallingLeaves: 0.85
   thresholdGrassPatches: 0
