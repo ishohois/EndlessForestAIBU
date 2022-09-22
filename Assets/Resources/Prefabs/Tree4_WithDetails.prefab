@@ -7534,8 +7534,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4087623449889798782}
-  - component: {fileID: 1945697033004611479}
   - component: {fileID: 8467147593689385327}
+  - component: {fileID: 1945697033004611479}
   - component: {fileID: 1668873048386543417}
   m_Layer: 8
   m_Name: Tree4_WithDetails
@@ -7591,18 +7591,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1945697033004611479
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7791147135733254209}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!136 &8467147593689385327
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -7617,6 +7605,18 @@ CapsuleCollider:
   m_Height: 12.434404
   m_Direction: 1
   m_Center: {x: 0.016534567, y: 4.7030516, z: 0.23270512}
+--- !u!114 &1945697033004611479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7791147135733254209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1668873048386543417
 MonoBehaviour:
   m_ObjectHideFlags: 0

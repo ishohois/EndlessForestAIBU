@@ -15,10 +15,10 @@ MonoBehaviour:
   objectType: 1
   setting: 1
   prefab: {fileID: 5331901717834053984, guid: ae61809c271d539409d6f17b64e1dc2f, type: 3}
-  percentAmount: 0.05
+  percentAmount: 0.13
   minScale: 0.9
   maxScale: 1.3
-  minSpawnHeightLimit: 2
+  minSpawnHeightLimit: -4
   maxSpawnHeightLimit: 8
   thresholdGodrays: 0
   thresholdFallingLeaves: 0.85

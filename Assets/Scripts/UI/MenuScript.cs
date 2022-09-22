@@ -16,4 +16,8 @@ public class MenuScript : MonoBehaviour
         Application.Quit();
         Debug.Log("Quitting...");
     }
+
+    public static void LoadScene(string sceneName) {
+        SceneManager.LoadScene(sceneName);
+    }
 }

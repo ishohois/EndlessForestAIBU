@@ -20,5 +20,5 @@ MonoBehaviour:
   persistence: 0.409
   lacunarity: 2
   offset: {x: 0, y: 0}
-  seed: 1337
+  seed: -275936
   randomSeed: 0

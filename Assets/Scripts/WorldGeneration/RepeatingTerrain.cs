@@ -68,17 +68,17 @@ public class RepeatingTerrain : MonoBehaviour
             }
         }
 
-        foreach(var chunk in chunksWithObjects)
+        foreach (var chunk in chunksWithObjects)
         {
             chunk.UpdateChunk();
-            if(chunk.DeactivateChunk == true)
+            if (chunk.DeactivateChunk == true)
             {
                 chunk.DestroyChunk();
                 chunksToDelete.Add(chunk);
             }
         }
 
-        foreach(var chunk in chunksToDelete)
+        foreach (var chunk in chunksToDelete)
         {
             chunksWithObjects.Remove(chunk);
             terrainChunks.Remove(chunk.keyPosition);
@@ -108,8 +108,9 @@ public class RepeatingTerrain : MonoBehaviour
         List<Point> pointsOfObjectsToBePlaced = new List<Point>();
         List<PooledObject> pooledObjects = new List<PooledObject>();
         List<PooledObject> grassPatchObjects = new List<PooledObject>();
+        DespawnGrassEvent grassEvent = new DespawnGrassEvent();
+
         public bool DeactivateChunk;
-        private DespawnGrassEvent grassEvent = new DespawnGrassEvent();
 
         public TerrainChunk(Vector2 viewerPostion, int size, float scale, Transform parent, Material material, List<SpawnObject> vegetationPrefabs)
         {
@@ -146,7 +147,8 @@ public class RepeatingTerrain : MonoBehaviour
         private void OnMeshHolderReceived(MeshHolder meshHolder)
         {
             meshFilter.mesh = meshHolder.GenerateMesh();
-            PlacePositions(size * scale, meshObject.transform, prefabs);
+            PlacePositions();
+            PlaceMissionObject();
             UpdateChunk();
         }
 
@@ -166,22 +168,20 @@ public class RepeatingTerrain : MonoBehaviour
                 DeactivateChunk = viewerDistanceFromNearestEdge > activationDistance;
                 if (hasPlacedPositions == true && hasPlacedObjects == false)
                 {
-                    PlaceObjects();
+                    PlaceVegetation();
                 }
 
                 SetObjectVisibility(visible);
             }
         }
 
-        private void PlacePositions(float chunkSize, Transform chunkTransform, List<SpawnObject> prefabs)
+        private void PlacePositions()
         {
             meshCollider = meshObject.AddComponent<MeshCollider>();
             hasPlacedPositions = true;
+            float chunkSize = ChunkSize();
             List<Point> points = ObjectPlacement.GeneratePoints(new Vector2(chunkSize, chunkSize), 15f, 30);
-            Vector3 startPosSpawn = new Vector3(
-                chunkTransform.transform.position.x - ((chunkSize) / 2),
-                60f,
-                chunkTransform.transform.position.z + ((chunkSize) / 2));
+            Vector3 startPosSpawn = StartPositionForObjectPlacing();
             Vector3 posToSpawn = startPosSpawn;
 
             foreach (SpawnObject spawnObject in ObjectPool.Instance.Prefabs)
@@ -244,17 +244,67 @@ public class RepeatingTerrain : MonoBehaviour
             Debug.Log(points.Count);
         }
 
-        private void PlaceObjects()
+        private Vector3 StartPositionForObjectPlacing()
+        {
+            Vector3 startPosSpawn = new Vector3(
+               meshObject.transform.position.x - (ChunkSize() / 2),
+               60f,
+               meshObject.transform.position.z + (ChunkSize() / 2));
+
+            return startPosSpawn;
+        }
+
+        private float ChunkSize()
+        {
+            return (float)(size * scale);
+        }
+
+        private void PlaceMissionObject()
+        {
+            float chunkSize = ChunkSize();
+            Vector3 startPosSpawn = StartPositionForObjectPlacing();
+            Vector3 posToSpawn = startPosSpawn;
+            Vector3 spawningPoint = Vector3.zero;
+
+            foreach (Point point in pointsOfObjectsToBePlaced)
+            {
+                posToSpawn.x += point.x;
+                posToSpawn.z += point.y - chunkSize;
+                
+                Ray ray = new Ray(posToSpawn, Vector3.down);
+                if (Physics.Raycast(ray, out RaycastHit hit))
+                {
+                    if (hit.point.y > 10f)
+                    {
+                        posToSpawn = startPosSpawn;
+                        continue;
+                    }
+                    spawningPoint = hit.point;
+                    break;
+                }
+                posToSpawn = startPosSpawn;
+            }
+
+            GameObject gameObject = MemoryObjectManager.Instance.SpawnMemoryObject();
+            if (gameObject != null)
+            {
+                if (spawningPoint != Vector3.zero)
+                {
+                    spawningPoint.y += 3f;
+                    gameObject.transform.localPosition = spawningPoint;
+                    gameObject.SetActive(true);
+                }
+            }
+
+        }
+
+        private void PlaceVegetation()
         {
             hasPlacedObjects = true;
             chunksWithObjects.Add(this);
-            float chunkSize = (float)(size * scale);
-            Vector3 startPosSpawn = new Vector3(
-               meshObject.transform.position.x - (chunkSize / 2),
-               60f,
-               meshObject.transform.position.z + (chunkSize / 2));
+            float chunkSize = ChunkSize();
+            Vector3 startPosSpawn = StartPositionForObjectPlacing();
             Vector3 posToSpawn = startPosSpawn;
-
 
             // place grass patches
             SpawnObject grassPrefab = ObjectPool.Instance.GrassPrefab;
@@ -262,8 +312,9 @@ public class RepeatingTerrain : MonoBehaviour
 
             for (int i = 0; i < grassPatches; i++)
             {
-                posToSpawn.x += pointsOfObjectsToBePlaced[i].x;
-                posToSpawn.z += pointsOfObjectsToBePlaced[i].y - chunkSize;
+                Point point = pointsOfObjectsToBePlaced[ObjectPlacement.RandomBetweenRangeInt(0, pointsOfObjectsToBePlaced.Count)];
+                posToSpawn.x += point.x;
+                posToSpawn.z += point.y - chunkSize;
 
 
                 Ray ray = new Ray(posToSpawn, Vector3.down);
@@ -284,6 +335,7 @@ public class RepeatingTerrain : MonoBehaviour
                 posToSpawn = startPosSpawn;
             }
 
+            // grass patches end here
 
             foreach (Point point in pointsOfObjectsToBePlaced)
             {
@@ -319,7 +371,6 @@ public class RepeatingTerrain : MonoBehaviour
 
                         if (spawnObject.VegetationSettings == VegetationSettings.GODRAY || spawnObject.VegetationSettings == VegetationSettings.FALLINGLEAVESGODRAY)
                         {
-                            Debug.Log("Vegetation type" + spawnObject.ObjectType);
                             float chanceToSpawnGodRays = ObjectPlacement.RandomValue();
                             if (chanceToSpawnGodRays >= spawnObject.ThresholdGodrays)
                             {
@@ -352,13 +403,14 @@ public class RepeatingTerrain : MonoBehaviour
             {
                 ObjectPool.Instance.Despawn(pooledObject);
             }
-            foreach(PooledObject pooled in grassPatchObjects)
+            foreach (PooledObject pooled in grassPatchObjects)
             {
                 pooled.IsActive = false;
             }
 
             EventSystem.Instance.FireEvent(grassEvent);
             pooledObjects.Clear();
+            grassPatchObjects.Clear();
             hasPlacedObjects = false;
         }
 

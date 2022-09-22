@@ -18,7 +18,7 @@ MonoBehaviour:
   percentAmount: 0.15
   minScale: 1
   maxScale: 1.5
-  minSpawnHeightLimit: 3
+  minSpawnHeightLimit: -2
   maxSpawnHeightLimit: 9
   thresholdGodrays: 0.846
   thresholdFallingLeaves: 0.872

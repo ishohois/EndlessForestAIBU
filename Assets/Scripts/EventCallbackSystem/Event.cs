@@ -44,4 +44,9 @@ namespace EventCallbacksSystem
     {
 
     }
+
+    public class MemoryCollectedEvent : Event
+    {
+        public MemoryObjectType MemoryObjectType { get; set; }
+    }
 }
