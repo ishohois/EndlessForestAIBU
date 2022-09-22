@@ -15,7 +15,7 @@ MonoBehaviour:
   objectType: 6
   setting: 3
   prefab: {fileID: 4623335366061013704, guid: 03dbdcf7540a71b40858602ecbac9cd2, type: 3}
-  percentAmount: 0.05
+  percentAmount: 0.1
   minScale: 1
   maxScale: 1
   minSpawnHeightLimit: -4

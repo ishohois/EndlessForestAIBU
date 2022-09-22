@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: Bush1
   m_EditorClassIdentifier: 
   objectType: 9
+  setting: 0
   prefab: {fileID: 7686136641106209555, guid: c8de6e158d4e4ac4db1090e16d5dc2f4, type: 3}
-  percentAmount: 0.005
+  percentAmount: 0.01
   minScale: 0.5
   maxScale: 1
   minSpawnHeightLimit: -1
   maxSpawnHeightLimit: 5
-  percentToHaveGodRays: 0
-  percentToHaveFallingLeaves: 0
-  percentToHaveChonky: 0
+  thresholdGodrays: 0
+  thresholdFallingLeaves: 0
+  thresholdGrassPatches: 0

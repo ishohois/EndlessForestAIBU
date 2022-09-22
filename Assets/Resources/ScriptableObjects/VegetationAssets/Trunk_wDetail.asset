@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Trunk_wDetail
   m_EditorClassIdentifier: 
   objectType: 25
+  setting: 0
   prefab: {fileID: 6871788097849259863, guid: dd98108f16da43a42a941168e555a74f, type: 3}
-  percentAmount: 0.04
+  percentAmount: 0.05
   minScale: 1
   maxScale: 1.1
   minSpawnHeightLimit: -5
