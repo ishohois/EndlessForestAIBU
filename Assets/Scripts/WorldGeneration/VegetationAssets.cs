@@ -14,4 +14,16 @@ public class VegetationAssets : MonoBehaviour
     public Material DefaultMaterial { get { return defaultMaterial; } }
     public Material ChangeColorMaterial { get { return changeColorMaterial; } }
     public MeshRenderer MeshRenderer { get { return meshRenderer; } }
+
+
+    private void OnDisable()
+    {
+        meshRenderer.material = defaultMaterial;
+
+        if (fallingLeavesParticles != null)
+            fallingLeavesParticles.SetActive(false);
+
+        if (godRayParticles != null)
+            godRayParticles.SetActive(false);
+    }
 }

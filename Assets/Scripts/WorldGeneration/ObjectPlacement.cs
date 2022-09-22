@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class ObjectPlacement
 {
-    private const int seed = 1337;
+    private const int seed = 123123;
     private static System.Random random;
     public static List<Point> GeneratePoints(Point sampleRegionSize, float minimumDistanceBetweenPoints, int rejectionTries)
     {

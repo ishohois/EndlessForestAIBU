@@ -39,4 +39,9 @@ namespace EventCallbacksSystem
     {
         
     }
+
+    public class DespawnGrassEvent : Event
+    {
+
+    }
 }

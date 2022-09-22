@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 242dac5bec1a4cc42b5d4a17a1ad50b0, type: 3}
+  m_Name: Tree3_wDetail
+  m_EditorClassIdentifier: 
+  objectType: 6
+  prefab: {fileID: 4623335366061013704, guid: 03dbdcf7540a71b40858602ecbac9cd2, type: 3}
+  percentAmount: 0.05
+  minScale: 1
+  maxScale: 1
+  minSpawnHeightLimit: -4
+  maxSpawnHeightLimit: 6
+  thresholdGodrays: 0.9
+  thresholdFallingLeaves: 0.9
+  thresholdGrassPatches: 0

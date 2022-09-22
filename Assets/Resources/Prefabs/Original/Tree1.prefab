@@ -9,14 +9,15 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4806863558471803866}
-  - component: {fileID: 5541939677274385381}
   - component: {fileID: 3741857850354183140}
-  m_Layer: 0
+  - component: {fileID: 5541939677274385381}
+  - component: {fileID: 372638873623937523}
+  m_Layer: 8
   m_Name: Tree1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4806863558471803866
 Transform:
@@ -36,18 +37,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5541939677274385381
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5331901717834053984}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!136 &3741857850354183140
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -62,6 +51,36 @@ CapsuleCollider:
   m_Height: 15.928238
   m_Direction: 1
   m_Center: {x: 1.757246, y: 4.5154657, z: -1.6075511}
+--- !u!114 &5541939677274385381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5331901717834053984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &372638873623937523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5331901717834053984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d9482ba2cbca9040ab1c14be6ce9b02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  godRayParticles: {fileID: 0}
+  fallingLeavesParticles: {fileID: 349864053728509925, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
+    type: 3}
+  defaultMaterial: {fileID: 2100000, guid: 6c3b493b28ac1304db6ea5974c036eb3, type: 2}
+  changeColorMaterial: {fileID: 2100000, guid: c58fc99ceec2dd84da15213b94c5c9bd, type: 2}
+  meshRenderer: {fileID: 6815984781117686589}
 --- !u!1 &5752959459160684412
 GameObject:
   m_ObjectHideFlags: 0
@@ -74,12 +93,12 @@ GameObject:
   - component: {fileID: 7511656710331024920}
   - component: {fileID: 3194784490653347362}
   - component: {fileID: 7138304312964477299}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Tree1_Trunk
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4334980006811604683
 Transform:
@@ -157,8 +176,8 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 13.153629
-  m_Center: {x: 1.714889, y: 11.01, z: 6.7}
+  m_Radius: 13.873511
+  m_Center: {x: 2.0100002, y: 13.382119, z: 0.95}
 --- !u!1 &6472523625359459773
 GameObject:
   m_ObjectHideFlags: 0
@@ -170,12 +189,12 @@ GameObject:
   - component: {fileID: 6654852242966208710}
   - component: {fileID: 5404233623253440891}
   - component: {fileID: 6815984781117686589}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Tree1_Leaves
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6654852242966208710
 Transform:
@@ -256,8 +275,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 349864053728509925, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
         type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 349864053728509925, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
+        type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 349864053728509925, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 349864053728509928, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
         type: 3}

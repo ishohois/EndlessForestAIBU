@@ -21,7 +21,6 @@ public class TerrainMapGenerator : MonoBehaviour
     [SerializeField] private Material terrainMaterial;
 
     [SerializeField] private TerrainMapVisualize mapVisualizer;
-    [SerializeField] private List<SpawnObject> prefabs;
 
     public bool autoUpdate;
     public NoiseInfoHolder NoiseInfo { get { return noiseInfo; } }
@@ -160,6 +159,10 @@ public class TerrainMapGenerator : MonoBehaviour
 
         foreach (SpawnObject spawnObject in ObjectPool.Instance.Prefabs)
         {
+            if (spawnObject.ObjectType == VegetationType.Grass_patch)
+            {
+                continue;
+            }
             int numberOfIterations = (int)(spawnObject.PercentAmount * points.Count);
 
             for (int i = 0; i < numberOfIterations; i++)
@@ -190,7 +193,7 @@ public class TerrainMapGenerator : MonoBehaviour
 
         foreach (Point point in points)
         {
-            SpawnObject randomSpawn = ObjectPool.Instance.Prefabs[ObjectPlacement.RandomBetweenRangeInt(0, prefabs.Count)];
+            SpawnObject randomSpawn = ObjectPool.Instance.Prefabs[ObjectPlacement.RandomBetweenRangeInt(0, ObjectPool.Instance.Prefabs.Count)];
             if (point.isPositionTaken == false)
             {
                 posToSpawn.x += point.x;
@@ -218,8 +221,6 @@ public class TerrainMapGenerator : MonoBehaviour
         Debug.Log(points.Count);
     }
 
-
-
     private void PlaceObjects()
     {
         Vector3 startPosSpawn = new Vector3(
@@ -228,11 +229,40 @@ public class TerrainMapGenerator : MonoBehaviour
            testMeshObject.transform.position.z + (float)((MapChunkSize * terrainInfo.UniformScale) / 2));
         Vector3 posToSpawn = startPosSpawn;
 
+        SpawnObject grassPrefab = ObjectPool.Instance.GrassPrefab;
+        int grassPatches = Mathf.CeilToInt(pointsOfObjectsToBePlaced.Count * grassPrefab.PercentAmount);
+
+        for (int i = 0; i < grassPatches; i++)
+        {
+            posToSpawn.x += pointsOfObjectsToBePlaced[i].x;
+            posToSpawn.z += pointsOfObjectsToBePlaced[i].y - MapChunkSize * terrainInfo.UniformScale;
+            
+
+            Ray ray = new Ray(posToSpawn, Vector3.down);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                if (hit.point.y > grassPrefab.MaxSpawnHeightLimit || hit.point.y < grassPrefab.MinSpawnHeightLimit)
+                {
+                    posToSpawn = startPosSpawn;
+                    continue;
+                }
+
+                GameObject gameObject = ObjectPool.Instance.SpawnGrass().GameObject;
+                gameObject.transform.position = hit.point - Vector3.up;
+                gameObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+            }
+
+            posToSpawn = startPosSpawn;
+        }
+
         foreach (Point point in pointsOfObjectsToBePlaced)
         {
-            if (point.objectType != ObjectType.Default)
+            if (point.objectType != VegetationType.Default)
             {
                 SpawnObject spawnObject = ObjectPool.Instance.SpawnObjects[point.objectType];
+
+                float spawnGrassChance = ObjectPlacement.RandomValue();
+
 
                 posToSpawn.x += point.x;
                 posToSpawn.z += point.y - MapChunkSize * terrainInfo.UniformScale;

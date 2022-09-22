@@ -17,7 +17,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &3935644640830664075
 Transform:
@@ -95,8 +95,8 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 13.551799
-  m_Center: {x: -0.4921503, y: 13.17904, z: -1.6687458}
+  m_Radius: 14.564752
+  m_Center: {x: 0.1666584, y: 14.355483, z: -1.6687388}
 --- !u!1 &5479825148775838376
 GameObject:
   m_ObjectHideFlags: 0
@@ -113,7 +113,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5408124360379814909
 Transform:
@@ -190,12 +190,14 @@ GameObject:
   m_Component:
   - component: {fileID: 6808165750898878529}
   - component: {fileID: 2083001968001847539}
+  - component: {fileID: -2708236160064809947}
+  - component: {fileID: -2380182086958983428}
   m_Layer: 8
   m_Name: Tree2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6808165750898878529
 Transform:
@@ -229,6 +231,37 @@ CapsuleCollider:
   m_Height: 13.017822
   m_Direction: 1
   m_Center: {x: -0.46953034, y: 5.205183, z: -0.89070034}
+--- !u!114 &-2708236160064809947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6138588817361122043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b33300ff8b1374e489150828f663134d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-2380182086958983428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6138588817361122043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d9482ba2cbca9040ab1c14be6ce9b02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  godRayParticles: {fileID: 6516713727619330006, guid: a9017e95b7fb6ff44bf851ae72d3777b,
+    type: 3}
+  fallingLeavesParticles: {fileID: 0}
+  defaultMaterial: {fileID: 2100000, guid: 6c3b493b28ac1304db6ea5974c036eb3, type: 2}
+  changeColorMaterial: {fileID: 2100000, guid: c58fc99ceec2dd84da15213b94c5c9bd, type: 2}
+  meshRenderer: {fileID: 2075527565721013822, guid: e3c8fbe1c4b9a2344ab4bc41fd8aff3f,
+    type: 3}
 --- !u!1001 &332384082741813214
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -244,12 +277,17 @@ PrefabInstance:
     - target: {fileID: 349864053728509925, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
         type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 349864053728509925, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 349864053728509925, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 349864053728509928, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
         type: 3}

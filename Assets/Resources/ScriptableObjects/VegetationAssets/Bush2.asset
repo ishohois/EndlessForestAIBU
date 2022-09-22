@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 242dac5bec1a4cc42b5d4a17a1ad50b0, type: 3}
+  m_Name: Bush2
+  m_EditorClassIdentifier: 
+  objectType: 10
+  prefab: {fileID: 8382805942936596456, guid: 2d9d86bfe4e7d64458ca2c8eeeca4990, type: 3}
+  percentAmount: 0.005
+  minScale: 0.8
+  maxScale: 1.1
+  minSpawnHeightLimit: -1
+  maxSpawnHeightLimit: 5
+  thresholdGodrays: 0
+  thresholdFallingLeaves: 0
+  thresholdGrassPatches: 0

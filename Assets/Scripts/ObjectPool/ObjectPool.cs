@@ -1,18 +1,24 @@
 using System.Collections.Generic;
 using UnityEngine;
+using EventCallbacksSystem;
 
 public class ObjectPool : MonoBehaviour
 {
     private static ObjectPool instance;
     
-    private Dictionary<ObjectType, Queue<PooledObject>> objectPools = new Dictionary<ObjectType, Queue<PooledObject>>();
-    private Dictionary<ObjectType, SpawnObject> spawnObjects = new Dictionary<ObjectType, SpawnObject>();
+    private Dictionary<VegetationType, Queue<PooledObject>> objectPools = new Dictionary<VegetationType, Queue<PooledObject>>();
+    private Dictionary<VegetationType, SpawnObject> spawnObjects = new Dictionary<VegetationType, SpawnObject>();
+    private Queue<PooledObject> grassPool = new Queue<PooledObject>();
 
     [SerializeField] private List<SpawnObject> prefabs;
+    [SerializeField] private SpawnObject grassPrefab;
     [SerializeField] private int totalNumberObjectPool;
+    [SerializeField] private int totalNumberGrass;
 
     public List<SpawnObject> Prefabs { get { return prefabs; } }
-    public Dictionary<ObjectType, SpawnObject> SpawnObjects { get { return spawnObjects; } }
+    public Dictionary<VegetationType, SpawnObject> SpawnObjects { get { return spawnObjects; } }
+    public Queue<PooledObject> GrassPool { get { return grassPool; } }
+    public SpawnObject GrassPrefab { get { return grassPrefab; } }
 
     public static ObjectPool Instance
     {
@@ -56,9 +62,19 @@ public class ObjectPool : MonoBehaviour
             }
             spawnObjects.Add(spawnObject.ObjectType, spawnObject);
         }
+
+        for (int i = 0; i < totalNumberGrass; i++)
+        {
+            GameObject gameObject = Instantiate(grassPrefab.Prefab, transform);
+            gameObject.SetActive(false);
+            PooledObject pooledObject = new PooledObject { ObjectType = grassPrefab.ObjectType, GameObject = gameObject, IsActive = false };
+            grassPool.Enqueue(pooledObject);
+        }
+
+        EventSystem.Instance.RegisterListener<DespawnGrassEvent>(HandleDespawnGrassEvent);
     }
 
-    public PooledObject SpawnGameObject(ObjectType objectType)
+    public PooledObject SpawnGameObject(VegetationType objectType)
     {
         if (objectPools.ContainsKey(objectType) == false)
         {
@@ -78,19 +94,34 @@ public class ObjectPool : MonoBehaviour
         pooledObject.GameObject.transform.position = Vector3.zero;
         pooledObject.GameObject.SetActive(false);
         pooledObject.IsActive = false;
+    }
 
-        VegetationAssets vegetationAssets;
-        if((vegetationAssets = pooledObject.GameObject.GetComponent<VegetationAssets>()) != null){
-            vegetationAssets.FallingLeavesParticles?.SetActive(false);
-            vegetationAssets.GodRayParticles?.SetActive(false);
-            vegetationAssets.MeshRenderer.material = vegetationAssets.DefaultMaterial;
+    public PooledObject SpawnGrass()
+    {
+        PooledObject pooledObject = grassPool.Dequeue();
+        pooledObject.GameObject.SetActive(true);
+        pooledObject.IsActive = true;
+        grassPool.Enqueue(pooledObject);
+        return pooledObject;
+    }
+
+    private void HandleDespawnGrassEvent(DespawnGrassEvent ev)
+    {
+        foreach(PooledObject pooledObject in grassPool)
+        {
+            if(pooledObject.IsActive == false)
+            {
+                pooledObject.GameObject.transform.position = Vector3.zero;
+                pooledObject.GameObject.SetActive(false);
+            }
         }
     }
+
 }
 
 public class PooledObject
 {
-    public ObjectType ObjectType;
+    public VegetationType ObjectType;
     public GameObject GameObject;
     public bool IsActive;
 }

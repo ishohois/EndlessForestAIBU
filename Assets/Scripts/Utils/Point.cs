@@ -5,7 +5,7 @@ public class Point
 {
     public float x, y;
     public bool isPositionTaken;
-    public ObjectType objectType;
+    public VegetationType objectType;
 
     public Point() { }
 

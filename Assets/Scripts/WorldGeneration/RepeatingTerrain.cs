@@ -120,6 +120,7 @@ public class RepeatingTerrain : MonoBehaviour
             Vector3 vector3 = new Vector3(position.x, 0f, position.y);
 
             meshObject = new GameObject("Terrain chunk" + generatedChunks);
+            meshObject.isStatic = true;
             meshRenderer = meshObject.AddComponent<MeshRenderer>();
             meshFilter = meshObject.AddComponent<MeshFilter>();
             meshRenderer.material = material;
@@ -251,9 +252,38 @@ public class RepeatingTerrain : MonoBehaviour
                meshObject.transform.position.z + (chunkSize / 2));
             Vector3 posToSpawn = startPosSpawn;
 
+
+            // place grass patches
+            SpawnObject grassPrefab = ObjectPool.Instance.GrassPrefab;
+            int grassPatches = Mathf.CeilToInt(pointsOfObjectsToBePlaced.Count * grassPrefab.PercentAmount);
+
+            for (int i = 0; i < grassPatches; i++)
+            {
+                posToSpawn.x += pointsOfObjectsToBePlaced[i].x;
+                posToSpawn.z += pointsOfObjectsToBePlaced[i].y - chunkSize;
+
+
+                Ray ray = new Ray(posToSpawn, Vector3.down);
+                if (Physics.Raycast(ray, out RaycastHit hit))
+                {
+                    if (hit.point.y > grassPrefab.MaxSpawnHeightLimit || hit.point.y < grassPrefab.MinSpawnHeightLimit)
+                    {
+                        posToSpawn = startPosSpawn;
+                        continue;
+                    }
+
+                    GameObject gameObject = ObjectPool.Instance.SpawnGrass().GameObject;
+                    gameObject.transform.position = hit.point - Vector3.up;
+                    gameObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+                }
+
+                posToSpawn = startPosSpawn;
+            }
+
+
             foreach (Point point in pointsOfObjectsToBePlaced)
             {
-                if (point.objectType != ObjectType.Default)
+                if (point.objectType != VegetationType.Default)
                 {
                     SpawnObject spawnObject = ObjectPool.Instance.SpawnObjects[point.objectType];
 
@@ -277,10 +307,10 @@ public class RepeatingTerrain : MonoBehaviour
                         objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
                         objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
 
-                        if (spawnObject.ObjectType == ObjectType.Tree2)
+                        if (spawnObject.ObjectType == VegetationType.Tree2 || spawnObject.ObjectType == VegetationType.Tree3)
                         {
                             float chanceToSpawnGodRays = ObjectPlacement.RandomValue();
-                            if (chanceToSpawnGodRays >= spawnObject.PercentToHaveGodRays)
+                            if (chanceToSpawnGodRays >= spawnObject.ThresholdGodrays)
                             {
                                 objectToPlace.GetComponent<VegetationAssets>().GodRayParticles.SetActive(true);
                                 Vector3 eulerAngles = LightManager.Instance.DirectionalLight.transform.rotation.eulerAngles;
@@ -291,25 +321,10 @@ public class RepeatingTerrain : MonoBehaviour
                             }
                         }
 
-                        if (spawnObject.ObjectType == ObjectType.Tree3)
-                        {
-                            float chanceToSpawnGodRays = ObjectPlacement.RandomValue();
-                            if (chanceToSpawnGodRays >= spawnObject.PercentToHaveGodRays)
-                            {
-                                objectToPlace.GetComponent<VegetationAssets>().GodRayParticles.SetActive(true);
-                                Vector3 eulerAngles = LightManager.Instance.DirectionalLight.transform.rotation.eulerAngles;
-                                eulerAngles.x = -eulerAngles.x;
-                                objectToPlace.GetComponent<VegetationAssets>().GodRayParticles.transform.rotation = Quaternion.Euler(Vector3.zero);
-                                objectToPlace.GetComponent<VegetationAssets>().GodRayParticles.transform.localRotation = Quaternion.Euler(Vector3.zero);
-                                objectToPlace.GetComponent<VegetationAssets>().GodRayParticles.transform.rotation = Quaternion.Euler(eulerAngles);
-                            }
-
-                        }
-
-                        if (spawnObject.ObjectType == ObjectType.Tree4 || spawnObject.ObjectType == ObjectType.Tree1 || spawnObject.ObjectType == ObjectType.Tree3)
+                        if (spawnObject.ObjectType == VegetationType.Tree1 || spawnObject.ObjectType == VegetationType.Tree3 || spawnObject.ObjectType == VegetationType.Tree4)
                         {
                             float chanceToHaveFallingLeaves = ObjectPlacement.RandomValue();
-                            if (chanceToHaveFallingLeaves >= spawnObject.PercentToHaveFallingLeaves)
+                            if (chanceToHaveFallingLeaves >= spawnObject.ThresholdFallingLeaves)
                             {
                                 objectToPlace.GetComponent<VegetationAssets>().FallingLeavesParticles.SetActive(true);
                             }
