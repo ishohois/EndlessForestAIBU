@@ -14,6 +14,7 @@ public class ObjectPool : MonoBehaviour
     [SerializeField] private SpawnObject grassPrefab;
     [SerializeField] private int totalNumberObjectPool;
     [SerializeField] private int totalNumberGrass;
+    [SerializeField] private float totalPercentage;
 
     public List<SpawnObject> Prefabs { get { return prefabs; } }
     public Dictionary<VegetationType, SpawnObject> SpawnObjects { get { return spawnObjects; } }
@@ -39,6 +40,18 @@ public class ObjectPool : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
+    }
+
+    private void OnValidate()
+    {
+        float totalPercent = 0;
+
+        foreach(SpawnObject spawnObject in prefabs)
+        {
+            totalPercent += spawnObject.PercentAmount;
+        }
+
+        totalPercentage = totalPercent * 100;
     }
 
     private void Awake()
