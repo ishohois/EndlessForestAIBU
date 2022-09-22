@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 960995502857572818}
   - component: {fileID: 4249708941696425591}
   - component: {fileID: 2097842406707505853}
+  - component: {fileID: 1831103675164054708}
+  - component: {fileID: 4147297897294841423}
   m_Layer: 0
   m_Name: Picture1
   m_TagString: Untagged
@@ -83,3 +85,30 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &1831103675164054708
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 440777709776440168}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.2000005, y: 1.7187979, z: 1.1266788}
+  m_Center: {x: 0.60000026, y: 0.8459481, z: -0.33527803}
+--- !u!114 &4147297897294841423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 440777709776440168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 948cf23b4b3091545ba40dde53d8320f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClipType: 8
+  resetTimeHasPlayedClip: 1
