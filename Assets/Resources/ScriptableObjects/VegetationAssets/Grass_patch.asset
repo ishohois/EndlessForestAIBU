@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Grass_patch
   m_EditorClassIdentifier: 
   objectType: 21
+  setting: 0
   prefab: {fileID: 2056476875785328032, guid: 4040a5be940d88142956ce5f63a80a66, type: 3}
-  percentAmount: 0.05
+  percentAmount: 0.1
   minScale: 0
   maxScale: 0
   minSpawnHeightLimit: -5

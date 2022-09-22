@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Log2
   m_EditorClassIdentifier: 
   objectType: 14
+  setting: 0
   prefab: {fileID: 4661405500602323804, guid: eb575de66e23005419e6de6240ac28f2, type: 3}
-  percentAmount: 0.01
+  percentAmount: 0.03
   minScale: 1
   maxScale: 1.2
   minSpawnHeightLimit: -5

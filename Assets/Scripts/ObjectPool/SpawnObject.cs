@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Vegetation/vegetation")]
 public class SpawnObject : ScriptableObject
 {
     [SerializeField] private VegetationType objectType;
+    [SerializeField] private VegetationSettings setting;
     [SerializeField] private GameObject prefab;
     [Range(0, 1)]
     [SerializeField] private float percentAmount;
@@ -33,7 +35,16 @@ public class SpawnObject : ScriptableObject
     public float ThresholdGodrays { get { return thresholdGodrays; } }
     public float ThresholdFallingLeaves { get { return thresholdFallingLeaves; } }
     public float ThresholdGrassPatches { get { return thresholdGrassPatches; } }
-    
+    public VegetationSettings VegetationSettings { get { return setting; } }
+
+}
+
+public enum VegetationSettings
+{
+    NONE,
+    FALLINGLEAVES,
+    GODRAY,
+    FALLINGLEAVESGODRAY,
 }
 
 public enum VegetationType

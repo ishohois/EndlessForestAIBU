@@ -13,11 +13,13 @@ MonoBehaviour:
   m_Name: Log2_logOnRock
   m_EditorClassIdentifier: 
   objectType: 15
+  setting: 0
   prefab: {fileID: 8241784084284043967, guid: da0c858235f58b4459a13cb6e96d9820, type: 3}
-  percentAmount: 0.001
+  percentAmount: 0.005
   minScale: 1
   maxScale: 1.2
   minSpawnHeightLimit: -5
   maxSpawnHeightLimit: 6
   thresholdGodrays: 0
   thresholdFallingLeaves: 0
+  thresholdGrassPatches: 0

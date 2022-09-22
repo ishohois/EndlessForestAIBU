@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Bush2
   m_EditorClassIdentifier: 
   objectType: 10
+  setting: 0
   prefab: {fileID: 8382805942936596456, guid: 2d9d86bfe4e7d64458ca2c8eeeca4990, type: 3}
-  percentAmount: 0.005
+  percentAmount: 0.04
   minScale: 0.8
   maxScale: 1.1
   minSpawnHeightLimit: -1

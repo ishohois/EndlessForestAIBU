@@ -13,11 +13,13 @@ MonoBehaviour:
   m_Name: Log1_grownOver
   m_EditorClassIdentifier: 
   objectType: 13
+  setting: 0
   prefab: {fileID: 1069854273353015052, guid: ce7c9a0fbc381d244a29dbe564147cae, type: 3}
-  percentAmount: 0.001
+  percentAmount: 0.03
   minScale: 1
   maxScale: 1.2
   minSpawnHeightLimit: -5
   maxSpawnHeightLimit: 7
   thresholdGodrays: 0
   thresholdFallingLeaves: 0
+  thresholdGrassPatches: 0

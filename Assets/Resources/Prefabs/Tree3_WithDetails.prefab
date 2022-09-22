@@ -1806,10 +1806,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d9482ba2cbca9040ab1c14be6ce9b02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  godRayParticles: {fileID: 6516713727619330006, guid: a9017e95b7fb6ff44bf851ae72d3777b,
-    type: 3}
-  fallingLeavesParticles: {fileID: 349864053728509925, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
-    type: 3}
+  godRayParticles: {fileID: 5312401428616485146}
+  fallingLeavesParticles: {fileID: 8745336309855889464}
   defaultMaterial: {fileID: 2100000, guid: 6c3b493b28ac1304db6ea5974c036eb3, type: 2}
   changeColorMaterial: {fileID: 2100000, guid: c58fc99ceec2dd84da15213b94c5c9bd, type: 2}
   meshRenderer: {fileID: 4877483674876931716}

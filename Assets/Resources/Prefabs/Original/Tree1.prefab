@@ -76,8 +76,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   godRayParticles: {fileID: 0}
-  fallingLeavesParticles: {fileID: 349864053728509925, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
-    type: 3}
+  fallingLeavesParticles: {fileID: 2575712002136973116}
   defaultMaterial: {fileID: 2100000, guid: 6c3b493b28ac1304db6ea5974c036eb3, type: 2}
   changeColorMaterial: {fileID: 2100000, guid: c58fc99ceec2dd84da15213b94c5c9bd, type: 2}
   meshRenderer: {fileID: 6815984781117686589}
@@ -348,6 +347,12 @@ PrefabInstance:
 --- !u!4 &2575712002136973105 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 349864053728509928, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
+    type: 3}
+  m_PrefabInstance: {fileID: 2838450751729033433}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2575712002136973116 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 349864053728509925, guid: 38c62d69b6f30d74bbaa6209246cd6a3,
     type: 3}
   m_PrefabInstance: {fileID: 2838450751729033433}
   m_PrefabAsset: {fileID: 0}

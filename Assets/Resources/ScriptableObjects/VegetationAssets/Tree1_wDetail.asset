@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Tree1_wDetail
   m_EditorClassIdentifier: 
   objectType: 2
+  settings: 1
   prefab: {fileID: 3472660036032773441, guid: 4fc4687d8ba0973469a43490d26a515e, type: 3}
   percentAmount: 0.03
   minScale: 1

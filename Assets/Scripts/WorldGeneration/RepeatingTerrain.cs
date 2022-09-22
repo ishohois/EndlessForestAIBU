@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using EventCallbacksSystem;
 
 public class RepeatingTerrain : MonoBehaviour
 {
@@ -106,7 +107,9 @@ public class RepeatingTerrain : MonoBehaviour
         bool hasPlacedObjects;
         List<Point> pointsOfObjectsToBePlaced = new List<Point>();
         List<PooledObject> pooledObjects = new List<PooledObject>();
+        List<PooledObject> grassPatchObjects = new List<PooledObject>();
         public bool DeactivateChunk;
+        private DespawnGrassEvent grassEvent = new DespawnGrassEvent();
 
         public TerrainChunk(Vector2 viewerPostion, int size, float scale, Transform parent, Material material, List<SpawnObject> vegetationPrefabs)
         {
@@ -272,9 +275,10 @@ public class RepeatingTerrain : MonoBehaviour
                         continue;
                     }
 
-                    GameObject gameObject = ObjectPool.Instance.SpawnGrass().GameObject;
-                    gameObject.transform.position = hit.point - Vector3.up;
-                    gameObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+                    PooledObject pooledObject = ObjectPool.Instance.SpawnGrass();
+                    pooledObject.GameObject.transform.position = hit.point - Vector3.up;
+                    pooledObject.GameObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+                    grassPatchObjects.Add(pooledObject);
                 }
 
                 posToSpawn = startPosSpawn;
@@ -307,8 +311,9 @@ public class RepeatingTerrain : MonoBehaviour
                         objectToPlace.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, 0, 0), Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
                         objectToPlace.transform.Rotate(Vector3.up, ObjectPlacement.RandomBetweenRange(0, 360));
 
-                        if (spawnObject.ObjectType == VegetationType.Tree2 || spawnObject.ObjectType == VegetationType.Tree3)
+                        if (spawnObject.VegetationSettings == VegetationSettings.GODRAY || spawnObject.VegetationSettings == VegetationSettings.FALLINGLEAVESGODRAY)
                         {
+                            Debug.Log("Vegetation type" + spawnObject.ObjectType);
                             float chanceToSpawnGodRays = ObjectPlacement.RandomValue();
                             if (chanceToSpawnGodRays >= spawnObject.ThresholdGodrays)
                             {
@@ -321,7 +326,7 @@ public class RepeatingTerrain : MonoBehaviour
                             }
                         }
 
-                        if (spawnObject.ObjectType == VegetationType.Tree1 || spawnObject.ObjectType == VegetationType.Tree3 || spawnObject.ObjectType == VegetationType.Tree4)
+                        if (spawnObject.VegetationSettings == VegetationSettings.FALLINGLEAVES || spawnObject.VegetationSettings == VegetationSettings.FALLINGLEAVESGODRAY)
                         {
                             float chanceToHaveFallingLeaves = ObjectPlacement.RandomValue();
                             if (chanceToHaveFallingLeaves >= spawnObject.ThresholdFallingLeaves)
@@ -341,6 +346,12 @@ public class RepeatingTerrain : MonoBehaviour
             {
                 ObjectPool.Instance.Despawn(pooledObject);
             }
+            foreach(PooledObject pooled in grassPatchObjects)
+            {
+                pooled.IsActive = false;
+            }
+
+            EventSystem.Instance.FireEvent(grassEvent);
             pooledObjects.Clear();
             hasPlacedObjects = false;
         }
