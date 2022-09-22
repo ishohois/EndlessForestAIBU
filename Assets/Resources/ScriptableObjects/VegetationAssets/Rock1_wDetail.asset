@@ -13,11 +13,13 @@ MonoBehaviour:
   m_Name: Rock1_wDetail
   m_EditorClassIdentifier: 
   objectType: 17
+  setting: 0
   prefab: {fileID: 7505805989416218134, guid: 67eb76f7a7705bc409cdcccec9ce3fdd, type: 3}
-  percentAmount: 0.005
+  percentAmount: 0.01
   minScale: 1
   maxScale: 1
   minSpawnHeightLimit: 10
   maxSpawnHeightLimit: 25
   thresholdGodrays: 0
   thresholdFallingLeaves: 0
+  thresholdGrassPatches: 0
