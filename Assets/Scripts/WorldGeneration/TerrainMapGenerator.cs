@@ -14,7 +14,6 @@ public class TerrainMapGenerator : MonoBehaviour
 
     [SerializeField] private NoiseInfoHolder noiseInfo;
     [SerializeField] private TerrainInfoHolder terrainInfo;
-    [SerializeField] private TextureInfoHolder textureInfo;
     [SerializeField] private RenderMode renderMode;
     [Range(0, 6)]
     [SerializeField] private int levelOfDetalInEditor;
@@ -25,7 +24,6 @@ public class TerrainMapGenerator : MonoBehaviour
     public bool autoUpdate;
     public NoiseInfoHolder NoiseInfo { get { return noiseInfo; } }
     public TerrainInfoHolder TerrainInfo { get { return terrainInfo; } }
-    public TextureInfoHolder TextureInfo { get { return textureInfo; } }
 
     private void Awake()
     {

@@ -66,15 +66,6 @@ public class MemoryObjectManager : MonoBehaviour
         }
     }
 
-    public Vector3 NextPositionOfMemory(Vector3 startPos)
-    {
-        foreach(var item in memoriesCollected)
-        {
-
-        }
-        return Vector3.zero;
-    }
-
     public GameObject SpawnMemoryObject()
     {
         if (index < memoryObjectsPrefabs.Count)

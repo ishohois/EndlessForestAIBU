@@ -11,11 +11,11 @@ public class RepeatingTerrain : MonoBehaviour
     private static float activationDistance = 400f;
     private static TerrainMapGenerator terrainMapGenerator;
     private static List<TerrainChunk> chunksWithObjects = new List<TerrainChunk>();
-    private List<TerrainChunk> chunksToDelete = new List<TerrainChunk>();
     private static int generatedChunks = 1;
 
     private int chunkSize;
     private int chunkVisibleInViewDistance;
+    private List<TerrainChunk> chunksToDelete = new List<TerrainChunk>();
     private Dictionary<Vector2, TerrainChunk> terrainChunks = new Dictionary<Vector2, TerrainChunk>();
     private Vector2 viewerPositionOld;
 
@@ -88,9 +88,6 @@ public class RepeatingTerrain : MonoBehaviour
 
     private class TerrainChunk
     {
-        public GameObject meshObject;
-        public Vector2 position;
-        public Vector2 keyPosition;
         Bounds bounds;
 
         MeshRenderer meshRenderer;
@@ -110,6 +107,9 @@ public class RepeatingTerrain : MonoBehaviour
         List<PooledObject> grassPatchObjects = new List<PooledObject>();
         DespawnGrassEvent grassEvent = new DespawnGrassEvent();
 
+        public GameObject meshObject;
+        public Vector2 position;
+        public Vector2 keyPosition;
         public bool DeactivateChunk;
 
         public TerrainChunk(Vector2 viewerPostion, int size, float scale, Transform parent, Material material, List<SpawnObject> vegetationPrefabs)

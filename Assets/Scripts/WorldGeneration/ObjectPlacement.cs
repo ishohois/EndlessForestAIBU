@@ -76,12 +76,6 @@ public static class ObjectPlacement
         return false;
     }
 
-    /// <summary>
-    /// Min and Max Inclusive
-    /// </summary>
-    /// <param name="minimum"></param>
-    /// <param name="maximum"></param>
-    /// <returns></returns>
     public static float RandomBetweenRange(float minimum, float maximum)
     {
         double min = minimum;
@@ -98,10 +92,6 @@ public static class ObjectPlacement
         return random.Next(minimum, maximum);
     }
 
-    /// <summary>
-    /// Get random float value between 0-1
-    /// </summary>
-    /// <returns></returns>
     public static float RandomValue()
     {
         return (float)random.NextDouble();
